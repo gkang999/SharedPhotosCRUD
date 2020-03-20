@@ -10,8 +10,6 @@ public class MySQLConnector {
 	
 	public void makeJDBCConnection() {
 		
-		ConfigReader configFile = new ConfigReader();
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			SysOLog.log("Congrats - Seems your MySQL JDBC Driver Registered!");
@@ -23,9 +21,9 @@ public class MySQLConnector {
  
 		try {
 			// DriverManager: The basic service for managing a set of JDBC drivers.
-			String jdbcConnString = configFile.getProperty("jdbcConnectionString");
-			String jdbcUser = configFile.getProperty("jdbcUser");
-			String jdbcPassword = configFile.getProperty("jdbcPassword");
+			String jdbcConnString = System.getenv("jdbcConnectionString");
+			String jdbcUser = System.getenv("jdbcUser");
+			String jdbcPassword = System.getenv("jdbcPassword");
 			
 			sharedPhotosConn = DriverManager.getConnection(jdbcConnString, jdbcUser, jdbcPassword);
 			if (sharedPhotosConn != null) {
@@ -43,8 +41,6 @@ public class MySQLConnector {
 	
 public void makeTestJDBCConnection() {
 		
-		ConfigReader configFile = new ConfigReader();
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			SysOLog.log("Congrats - Seems your MySQL JDBC Driver Registered!");
@@ -56,9 +52,9 @@ public void makeTestJDBCConnection() {
  
 		try {
 			// DriverManager: The basic service for managing a set of JDBC drivers.
-			String jdbcConnString = configFile.getProperty("testjdbcConnectionString");
-			String jdbcUser = configFile.getProperty("testjdbcUser");
-			String jdbcPassword = configFile.getProperty("testjdbcPassword");
+			String jdbcConnString = System.getenv("testjdbcConnectionString");
+			String jdbcUser = System.getenv("testjdbcUser");
+			String jdbcPassword = System.getenv("testjdbcPassword");
 			
 			sharedPhotosConn = DriverManager.getConnection(jdbcConnString, jdbcUser, jdbcPassword);
 			if (sharedPhotosConn != null) {
