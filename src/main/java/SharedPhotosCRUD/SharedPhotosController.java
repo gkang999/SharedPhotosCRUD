@@ -224,7 +224,7 @@ public class SharedPhotosController {
 	 * String: albumName
 	 */
 	@PostMapping("/images/delete")
-	public JSONObject deleteImage(@RequestBody Image idenReqBody) throws Exception {
+	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		
@@ -246,13 +246,13 @@ public class SharedPhotosController {
         urlParameters.add(new BasicNameValuePair("photoName", idenReqBody.getPictureName()));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
-        JSONObject resp;
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(post)) {
-    		resp = new JSONObject(EntityUtils.toString(response.getEntity()));
+        } catch (Exception e) {
+        	return 1;
         }
 
-		return resp;
+		return 0;
 	}
 	
 	/*idenReqBody requires:
