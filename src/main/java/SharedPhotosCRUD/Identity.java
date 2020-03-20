@@ -8,6 +8,10 @@ public class Identity {
 	private String roleType;
 	private String oldAccountName;
 	
+	public Identity() {
+		
+	}
+	
 	//response body read
 	public Identity(String accName, String em, String accOwn, String creDate, String rType){
 		this.setAccountName(accName);
