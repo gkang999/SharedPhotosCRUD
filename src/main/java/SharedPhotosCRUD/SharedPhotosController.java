@@ -201,6 +201,9 @@ public class SharedPhotosController {
         JSONObject image;
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(post)) {
+        	if(response == null) {
+        		return 1;
+        	}
     		image = new JSONObject(EntityUtils.toString(response.getEntity()));
         }
 
