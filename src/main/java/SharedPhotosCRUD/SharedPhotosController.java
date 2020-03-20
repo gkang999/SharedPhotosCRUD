@@ -224,7 +224,7 @@ public class SharedPhotosController {
 	 * String: albumName
 	 */
 	@PostMapping("/images/delete")
-	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
+	public JSONObject deleteImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		
@@ -236,13 +236,23 @@ public class SharedPhotosController {
 
 		myConnector.closeJDBCConnection();
 
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/delete")
-				.queryParam("accountName", idenReqBody.getAccountName())
-				.queryParam("albumName", idenReqBody.getAlbumName())
-				.queryParam("photoName", idenReqBody.getPictureName());
+		
+		HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/delete");
 
-		return target.request(MediaType.APPLICATION_JSON).get(int.class);
+        // add request parameter, form parameters
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
+        urlParameters.add(new BasicNameValuePair("albumName", idenReqBody.getAlbumName()));
+        urlParameters.add(new BasicNameValuePair("photoName", idenReqBody.getPictureName()));
+
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        JSONObject resp;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(post)) {
+    		resp = new JSONObject(EntityUtils.toString(response.getEntity()));
+        }
+
+		return resp;
 	}
 	
 	/*idenReqBody requires:
