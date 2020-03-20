@@ -73,12 +73,6 @@
 		  <artifactId>json-path</artifactId>
 		  <scope>test</scope>
 		</dependency>
-		<dependency>
-		    <groupId>SharedPhotos</groupId>
-		    <artifactId>SharedPhotos</artifactId>
-		    <version>1.8.1-SNAPSHOT</version>
-		    <scope>compile</scope>
-		</dependency>
 		
 		<dependency>
 		    <groupId>commons-digester</groupId>
