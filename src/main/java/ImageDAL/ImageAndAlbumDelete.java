@@ -34,7 +34,19 @@ public class ImageAndAlbumDelete {
 	public static void deleteAlbumFromDB(String accountName, String albumName, MySQLConnector databaseConnector) {
 		 
 		try {
-			String insertQueryStatement = "DELETE FROM albums WHERE album_name = ? AND "
+			String insertQueryStatement = "DELETE FROM pictures WHERE album_id = "
+					+ "(SELECT album_id FROM albums WHERE album_name = ? AND account_id = "
+					+ "(SELECT account_id FROM accounts WHERE account_name = ?))";
+ 
+				sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
+				sharedPhotosPreparedStatement.setString(1, albumName);
+				sharedPhotosPreparedStatement.setString(2, accountName);
+	 
+				// execute insert SQL statement
+			sharedPhotosPreparedStatement.executeUpdate();
+			SysOLog.log("pictures deleted successfully");
+				
+			insertQueryStatement = "DELETE FROM albums WHERE album_name = ? AND "
 					+ "albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
@@ -44,9 +56,7 @@ public class ImageAndAlbumDelete {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(albumName + " deleted successfully");
-		} catch (
- 
-		SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
