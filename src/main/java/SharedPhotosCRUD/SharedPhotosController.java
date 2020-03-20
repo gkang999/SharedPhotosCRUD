@@ -222,9 +222,8 @@ public class SharedPhotosController {
 	 * String: accountName
 	 * String: pictureName
 	 * String: albumName
-	 * String: pictureLocation
 	 */
-	@DeleteMapping("/images/delete")
+	@PostMapping("/images/delete")
 	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
