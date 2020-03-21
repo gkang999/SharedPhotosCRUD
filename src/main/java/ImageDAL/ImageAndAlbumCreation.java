@@ -12,8 +12,10 @@ public class ImageAndAlbumCreation {
 	public static void addPictureToDB(String accountName, String pictureName, String albumName, String pictureExtension, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "INSERT  INTO  pictures (account_id, picture_name, album_id, picture_extension) SELECT "
-					+ "accounts.account_id, ?, albums.album_id, ? FROM accounts, albums WHERE accounts.account_name = ? AND albums.album_name = ? LIMIT 1";
+			String insertQueryStatement = "INSERT  INTO  pictures (account_id, picture_name, album_id, picture_extension) "
+					+ "SELECT account_id, ?, album_id, ? FROM albums"
+					+ "WHERE albums.account_id = (SELECT account_id FROM accounts WHERE account_name = ?) "
+					+ "AND albums.album_name = ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);
