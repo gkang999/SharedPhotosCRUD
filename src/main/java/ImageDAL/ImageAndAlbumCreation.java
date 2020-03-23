@@ -14,8 +14,8 @@ public class ImageAndAlbumCreation {
 		try {
 			String insertQueryStatement = "INSERT  INTO  pictures "
 					+ "SELECT albums.account_id, ?, albums.album_id, ? "
-					+ "FROM albums WHERE albums.account_id = (SELECT account_id FROM accounts WHERE account_name = ?) " 
-					+ "AND albums.album_name = ?;";
+					+ "FROM albums WHERE albums.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) " 
+					+ "AND albums.album_name = BINARY ?;";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);
@@ -37,7 +37,7 @@ public class ImageAndAlbumCreation {
 		 
 		try {
 			String insertQueryStatement = "INSERT  INTO  albums (account_id, album_name) SELECT "
-					+ "accounts.account_id, ? FROM accounts WHERE accounts.account_name = ? LIMIT 1";
+					+ "accounts.account_id, ? FROM accounts WHERE accounts.account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, albumName);

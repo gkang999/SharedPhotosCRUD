@@ -12,7 +12,7 @@ public class IdentityDelete {
 	public static void deleteDataFromDB(String accountName, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "DELETE FROM accounts WHERE account_name = ?";
+			String insertQueryStatement = "DELETE FROM accounts WHERE account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, accountName);

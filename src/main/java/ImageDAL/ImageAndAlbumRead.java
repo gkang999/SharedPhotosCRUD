@@ -46,9 +46,9 @@ public class ImageAndAlbumRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures "
-					+ "WHERE pictures.album_id = (SELECT album_id FROM albums WHERE album_name = ? "
-					+ "AND account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)) "
-					+ "AND pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?);";
+					+ "WHERE pictures.album_id = (SELECT album_id FROM albums WHERE album_name = BINARY ? "
+					+ "AND account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)) "
+					+ "AND pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?);";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
@@ -84,9 +84,10 @@ public class ImageAndAlbumRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures WHERE "
-					+ "pictures.picture_name = ? AND "
-					+ "pictures.album_id = (SELECT album_id FROM albums WHERE albums.album_name = ? AND albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)) AND "
-					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
+					+ "pictures.picture_name = BINARY ? AND "
+					+ "pictures.album_id = (SELECT album_id FROM albums WHERE albums.album_name = BINARY ? "
+					+ "AND albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)) AND "
+					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
@@ -123,7 +124,7 @@ public class ImageAndAlbumRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT album_name FROM albums WHERE "
-					+ "account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
+					+ "account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
