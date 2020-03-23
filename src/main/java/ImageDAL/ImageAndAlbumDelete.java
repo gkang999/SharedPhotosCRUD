@@ -12,9 +12,10 @@ public class ImageAndAlbumDelete {
 	public static void deletePictureFromDB(String accountName, String pictureName, String albumName, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "DELETE FROM pictures WHERE picture_name = ? AND "
-					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)"
-					+ "AND pictures.album_id = (SELECT album_id FROM albums WHERE album_name = ? AND account_id = SELECT account_id from accounts WHERE account_name = ?);";
+			String insertQueryStatement = "DELETE FROM pictures WHERE picture_name = ? "
+					+ "AND pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)"
+					+ "AND pictures.album_id = (SELECT album_id FROM albums WHERE albums.album_name = ? "
+					+ "AND albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?));";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);
