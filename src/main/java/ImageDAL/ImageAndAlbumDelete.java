@@ -14,12 +14,13 @@ public class ImageAndAlbumDelete {
 		try {
 			String insertQueryStatement = "DELETE FROM pictures WHERE picture_name = ? AND "
 					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)"
-					+ "AND pictures.album_id = (SELECT album_id FROM albums WHERE album_name = ?);";
+					+ "AND pictures.album_id = (SELECT album_id FROM albums WHERE album_name = ? AND account_id = SELECT account_id from accounts WHERE account_name = ?);";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);
 			sharedPhotosPreparedStatement.setString(2, accountName);
 			sharedPhotosPreparedStatement.setString(3, albumName);
+			sharedPhotosPreparedStatement.setString(4, accountName);
  
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
