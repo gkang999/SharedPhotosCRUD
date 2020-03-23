@@ -47,7 +47,7 @@ public class ImageAndAlbumRead {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures "
 					+ "WHERE pictures.album_id = (SELECT album_id FROM albums WHERE album_name = ? "
-					+ "ND account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)) "
+					+ "AND account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)) "
 					+ "AND pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?);";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
