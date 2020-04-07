@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import IdentityDAL.*;
 import ImageDAL.*;
 import MySQLConnector.*;
-import SharedPhotosUtils.ConfigReader;
 import SharedPhotosUtils.PassHasher;
 import CRUDUtils.*;
 
@@ -294,7 +293,6 @@ public class SharedPhotosController {
 	 * String: albumName
 	 */
 	@PostMapping("/images/delete")
-=======
 	/**
 	   * sends image information to DAL to delete image
 	   * @param type Image containing account information
