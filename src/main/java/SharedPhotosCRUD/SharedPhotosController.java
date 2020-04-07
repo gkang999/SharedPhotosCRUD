@@ -1,6 +1,8 @@
 package SharedPhotosCRUD;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import IdentityDAL.*;
 import ImageDAL.*;
 import MySQLConnector.*;
 import SharedPhotosUtils.ConfigReader;
+import SharedPhotosUtils.PassHasher;
 import CRUDUtils.*;
 
 import javax.ws.rs.client.*;
@@ -26,6 +29,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.javatuples.Triplet;
+
+import java.time.LocalDateTime;
 
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,25 +41,45 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RestController
 public class SharedPhotosController {
-
-	@PostMapping("/accounts/readAll")
-	public List<Identity> getAllAccounts() throws Exception {
-		MySQLConnector myConnector = new MySQLConnector();
-		myConnector.makeJDBCConnection();
-
-		List<Identity> tr = ResultSetConvertor.convertToIdentityList(IdentityRead.readAllDataFromDB(myConnector));
-
-		myConnector.closeJDBCConnection();
-		return tr;
+	
+	List<Triplet<UUID, LocalDateTime, String>> SessionKeys = new ArrayList<Triplet<UUID, LocalDateTime, String>>();
+	
+	private boolean isValid(String uuidAsString, String accountName) {
+		this.cleanSessionKeys(); //remove all old session keys
+		for(int i = 0; i<SessionKeys.size(); i++) {
+			if(SessionKeys.get(i).getValue0().equals(UUID.fromString(uuidAsString)) && SessionKeys.get(i).getValue2().contentEquals(accountName)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	/*idenReqBody requires:
-	 * String: accountName
-	 */
+	private void cleanSessionKeys() {
+		for(int i = 0; i<SessionKeys.size(); i++) {
+			if(SessionKeys.get(i).getValue1().plusHours(24).isBefore(LocalDateTime.now())){
+				SessionKeys.remove(i);
+			}
+		}
+	}
+	
+	
+	
+	/**************************************************
+	 ************ Account CRUD operations *************
+	 **************************************************/
+	
+	
+	
+	/**
+	   * sends account information to DAL to read account
+	   * @param type Identity containing account information
+	   * @return List<Identity> should be containing the single requested entry
+	   */
 	@PostMapping("/accounts/read")
 	public List<Identity> getAccountByAccountName(@RequestBody Identity idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -65,12 +91,11 @@ public class SharedPhotosController {
 		return tr;
 	}
 	
-	/*idenReqBody requires:
-	 * String: accountName
-	 * String: email
-	 * String: accountOwner
-	 * String: roleType
-	 */
+	/**
+	   * sends account information to DAL to create account
+	   * @param type Identity containing account information
+	   * @return void
+	   */
 	@PostMapping("/accounts/create")
 	public void postAccount(@RequestBody Identity idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -82,14 +107,49 @@ public class SharedPhotosController {
 				idenReqBody.getEmail(),
 				idenReqBody.getAccountOwner(),
 				idenReqBody.getRoleType(),
+				PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()),
 				myConnector);
 
 		myConnector.closeJDBCConnection();
 	}
 	
-	/*idenReqBody requires:
-	 * String: accountName
-	 */
+	/**
+	   * sends account information to DAL to validate account
+	   * @param type Identity containing account information
+	   * @return void
+	   */
+	@PostMapping("/accounts/login")
+	public List<String> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
+		
+		
+		
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+
+		
+		List<Identity> tr = ResultSetConvertor.convertToIdentityList(IdentityRead.validateLogin(
+				idenReqBody.getAccountName(), 
+				PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()),
+				myConnector));
+
+		myConnector.closeJDBCConnection();
+		
+		if(tr.size()==1) {
+			UUID temp = UUID.randomUUID();
+			this.SessionKeys.add(new Triplet<UUID, LocalDateTime, String>(temp, LocalDateTime.now(), idenReqBody.getAccountName()));
+			List<String> ret = new ArrayList<String>();
+			ret.add(temp.toString());
+			return ret;
+		}
+		
+		return null;
+	}
+	
+	/**
+	   * sends account information to DAL to delete account
+	   * @param type Identity containing account information
+	   * @return void
+	   */
 	@DeleteMapping("/accounts/delete")
 	public void deleteAccount(@RequestBody Identity idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -102,13 +162,11 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 	}
 	
-	/*idenReqBody requires:
-	 * String: oldAccountName
-	 * String: newAccountName
-	 * String: email
-	 * String: accountOwner
-	 * String: roleType
-	 */
+	/**
+	   * sends account information to DAL to update account
+	   * @param type Identity containing account information
+	   * @return void
+	   */
 	@PutMapping("/accounts/update")
 	public void updateAccount(@RequestBody Identity idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -125,15 +183,19 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 	}
 	
-	/***
-	 * Image CRUD operations
-	 */
 	
-	/* Takes album name and retrieves list of pictures
-	 * idenReqBody requires:
-	 * String: albumName
-	 * String: accountName
-	 */
+	
+	/**************************************************
+	 ************ Image CRUD operations ***************
+	 **************************************************/
+	
+	
+	
+	/**
+	   * sends image information to DAL to read image
+	   * @param type Image containing account information
+	   * @return List<Image> should be containing the single requested entry
+	   */
 	@PostMapping("/images/read")
 	public List<Image> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -166,13 +228,11 @@ public class SharedPhotosController {
 	
 	
 	
-	/* Takes picture information and creates entry for that picture in DB
-	 * idenReqBody requires:
-	 * String: pictureName
-	 * String: accountName
-	 * String: albumName
-	 * String: base64Encoding
-	 */
+	/**
+	   * sends image information to DAL to create image
+	   * @param type Image containing account information
+	   * @return 0 on success, 1 otherwise
+	   */
 	@PostMapping("/images/create")
 	public int postImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -207,28 +267,32 @@ public class SharedPhotosController {
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(post)) {
     		image = new JSONObject(EntityUtils.toString(response.getEntity()));
+        } catch (Exception e) {
+        	return 1;
         }
-
-		ImageAndAlbumCreation.addPictureToDB(
-				idenReqBody.getAccountName(),
-				idenReqBody.getPictureName(),
-				idenReqBody.getAlbumName(),
-				image.getString("photoExtension"),
-				myConnector);
-		
-		myConnector.closeJDBCConnection();
+        
+        try {
+    		ImageAndAlbumCreation.addPictureToDB(
+    				idenReqBody.getAccountName(),
+    				idenReqBody.getPictureName(),
+    				idenReqBody.getAlbumName(),
+    				image.getString("photoExtension"),
+    				myConnector);
+    		
+    		myConnector.closeJDBCConnection();
+        } catch (Exception e){
+        	return 1;
+        }
 
 		System.out.println(tr.size());
 		return 0;
 	}
 	
-	/* Takes accountName, albumName, pictureName and deletes entry from DB
-	 * idenReqBody requires:
-	 * String: accountName
-	 * String: pictureName
-	 * String: albumName
-	 * String: pictureLocation
-	 */
+	/**
+	   * sends image information to DAL to delete image
+	   * @param type Image containing account information
+	   * @return 0 on success, 1 otherwise
+	   */
 	@DeleteMapping("/images/delete")
 	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -253,12 +317,11 @@ public class SharedPhotosController {
 		return target.request(MediaType.APPLICATION_JSON).get(int.class);
 	}
 	
-	/*idenReqBody requires:
-	 * String: accountName
-	 * String: albumName
-	 * String: pictureName
-	 * String: newPictureName
-	 */
+	/**
+	   * sends image information to DAL to update account
+	   * @param type Image containing account information
+	   * @return void
+	   */
 	@PutMapping("/images/update/name")
 	public void updateImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -298,13 +361,12 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 	}
 	
-	/*idenReqBody requires:
-	 * String: accountName
-	 * String: pictureName
-	 * String: newPictureLocation
-	 * String: oldAlbumName
-	 * String: newAlbumName
-	 */
+	
+	/**
+	   * sends image information to DAL to update album of image
+	   * @param type Image containing image information
+	   * @return void
+	   */
 	@PutMapping("/images/update/album")
 	public void updatePicturesAlbumToDB(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
@@ -344,24 +406,42 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 	}
 	
-	/* idenReqBody requires:
-	 * String: accountName
-	 * String: albumName
-	 */
+	
+	
+	/**************************************************
+	 ************ Album CRUD operations ***************
+	 **************************************************/
+	
+
+	
+	/**
+	   * sends album information to DAL to create album
+	   * @param type Album containing album information
+	   * @return 0 on success
+	   */
 	@PostMapping("/albums/create")
-	public int createAlbum(@RequestBody Image idenReqBody) {
+	public int createAlbum(@RequestBody Album idenReqBody) {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-		ImageAndAlbumCreation.addAlbumToDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+		try {
+			ImageAndAlbumCreation.addAlbumToDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e) {
+			return 1;
+		}
 		
 		return 0;
 	}
 	
-	/* idenReqBody requires:
-	 * String: accountName
-	 */
+	/**
+	   * sends album information to DAL to read album
+	   * @param type Album containing album information
+	   * @return List<Album> should contain single album requested
+	   */
 	@PostMapping("/albums/read")
-	public List<Album> readAlbums(@RequestBody Image idenReqBody) throws SQLException {
+	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader Map<String, String> headers) throws SQLException {
+		if(!this.isValid(headers.get("SPDKSessionKey"), idenReqBody.getAccountName())) {
+			return null;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<Album> tr = ResultSetConvertor.convertToAlbumList(ImageAndAlbumRead.readAlbumsFromDB(idenReqBody.getAccountName(), myConnector));
@@ -369,15 +449,20 @@ public class SharedPhotosController {
 		return tr;
 	}
 	
-	/* idenReqBody requires:
-	 * String: accountName
-	 * String: albumName
-	 */
+	/**
+	   * sends image information to DAL to delete album
+	   * @param type Album containing album information
+	   * @return 0 on success
+	   */
 	@PostMapping("/albums/delete")
-	public int deleteAlbum(@RequestBody Image idenReqBody) {
+	public int deleteAlbum(@RequestBody Album idenReqBody) {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-		ImageAndAlbumDelete.deleteAlbumFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+		try {
+			ImageAndAlbumDelete.deleteAlbumFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e){
+			return 1;
+		}
 		
 		return 0;
 	}

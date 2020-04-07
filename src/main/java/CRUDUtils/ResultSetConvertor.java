@@ -13,6 +13,11 @@ import java.util.*;
 
 public class ResultSetConvertor {
 
+	/**
+	   * Converts a mysql query result set to a JSONArray
+	   * @param type is ResultSet
+	   * @return JSONArray conversion of the result set
+	   */
 	public static JSONArray convertToJSON(ResultSet resultSet)
             throws Exception {
         JSONArray jsonArray = new JSONArray();
@@ -28,6 +33,11 @@ public class ResultSetConvertor {
         return jsonArray;
     }
 	
+	/**
+	   * Converts a mysql query result set to a list of Identity
+	   * @param ResultSet of Identity
+	   * @return List<Identity> conversion of ResultSet
+	   */
 	public static List<Identity> convertToIdentityList(ResultSet resultSet) throws SQLException {
 		List<Identity> ll = new LinkedList<Identity>();
 	
@@ -47,6 +57,11 @@ public class ResultSetConvertor {
 		return ll;
 	}
 	
+	/**
+	   * Converts a mysql query result set to a list of Image
+	   * @param ResultSet of Image
+	   * @return List<Image> conversion of ResultSet
+	   */
 	public static List<Image> convertToImageList(ResultSet resultSet) throws SQLException {
 		List<Image> ll = new LinkedList<Image>();
 	
@@ -66,6 +81,11 @@ public class ResultSetConvertor {
 		return ll;
 	}
 	
+	/**
+	   * Converts a mysql query result set to a list of Album
+	   * @param ResultSet of Album
+	   * @return List<Album> conversion of ResultSet
+	   */
 	public static List<Album> convertToAlbumList(ResultSet resultSet) throws SQLException {
 		List<Album> ll = new LinkedList<Album>();
 	
