@@ -7,6 +7,7 @@ public class Identity {
 	private String creationDate;
 	private String roleType;
 	private String oldAccountName;
+	private String accountPass;
 	
 	public Identity() {
 		
@@ -67,5 +68,13 @@ public class Identity {
 
 	public void setOldAccountName(String oldAccountName) {
 		this.oldAccountName = oldAccountName;
+	}
+
+	public String getAccountPass() {
+		return accountPass;
+	}
+
+	public void setAccountPass(String password) {
+		this.accountPass = password;
 	}
 }
