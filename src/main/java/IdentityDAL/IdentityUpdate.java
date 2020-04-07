@@ -11,7 +11,7 @@ public class IdentityUpdate {
 	public static void updateDataToDB(String oldAccountName, String newAccountName, String email, String accountOwner, String roleType, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "UPDATE accounts SET account_name = ?, email = ?, account_owner = ?, role_id = (SELECT roles.role_id FROM roles WHERE role_type = ?) WHERE account_name = ?";
+			String insertQueryStatement = "UPDATE accounts SET account_name = ?, email = ?, account_owner = ?, role_id = (SELECT roles.role_id FROM roles WHERE role_type = BINARY ?) WHERE account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, newAccountName);

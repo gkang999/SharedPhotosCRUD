@@ -13,10 +13,10 @@ public class ImageUpdate {
  
 		try {
 			String insertQueryStatement = "UPDATE pictures SET album_id = "
-					+ "(SELECT album_id FROM albums WHERE album_name = ?"
-					+ "AND account_id = (SELECT account_id FROM accounts WHERE account_name = ?) LIMIT 1) "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = ?) "
-					+ "AND album_id = (SELECT album_id FROM albums WHERE album_name = ?)";
+					+ "(SELECT album_id FROM albums WHERE album_name = BINARY ?"
+					+ "AND account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) LIMIT 1) "
+					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
+					+ "AND album_id = (SELECT album_id FROM albums WHERE album_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, newAlbumName);
@@ -39,8 +39,8 @@ public class ImageUpdate {
 		 
 		try {
 			String insertQueryStatement = "UPDATE pictures SET picture_name = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = ?) "
-					+ "AND album_id = (SELECT album_id FROM albums WHERE album_name = ?) "
+					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
+					+ "AND album_id = (SELECT album_id FROM albums WHERE album_name = BINARY ?) "
 					+ "AND picture_name = ?;";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
@@ -63,8 +63,8 @@ public class ImageUpdate {
 		 
 		try {
 			String insertQueryStatement = "UPDATE albums SET album_name = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = ?) "
-					+ "AND album_name = ?);";
+					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
+					+ "AND album_name = BINARY ?);";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, newAlbumName);

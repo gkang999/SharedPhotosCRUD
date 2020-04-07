@@ -45,15 +45,16 @@ public class ImageAndAlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures, albums WHERE "
-					+ "pictures.album_id = albums.album_id AND "
-					+ "albums.album_name = ? AND "
-					+ "albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
+			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures "
+					+ "WHERE pictures.album_id = (SELECT album_id FROM albums WHERE album_name = BINARY ? "
+					+ "AND account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)) "
+					+ "AND pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?);";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
 			sharedPhotosPreparedStatement.setString(1, albumName);
 			sharedPhotosPreparedStatement.setString(2, accountName);
+			sharedPhotosPreparedStatement.setString(3, accountName);
  
 			// Execute the Query, and get a java ResultSet
 			ResultSet rs = sharedPhotosPreparedStatement.executeQuery();
@@ -83,15 +84,17 @@ public class ImageAndAlbumRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures WHERE "
-					+ "pictures.picture_name = ? AND "
-					+ "pictures.album_id = (SELECT album_id FROM albums WHERE albums.album_name = ?) AND "
-					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
+					+ "pictures.picture_name = BINARY ? AND "
+					+ "pictures.album_id = (SELECT album_id FROM albums WHERE albums.album_name = BINARY ? "
+					+ "AND albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)) AND "
+					+ "pictures.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
 			sharedPhotosPreparedStatement.setString(1, pictureName);
 			sharedPhotosPreparedStatement.setString(2, albumName);
 			sharedPhotosPreparedStatement.setString(3, accountName);
+			sharedPhotosPreparedStatement.setString(4, accountName);
  
 			// Execute the Query, and get a java ResultSet
 			ResultSet rs = sharedPhotosPreparedStatement.executeQuery();
@@ -121,7 +124,7 @@ public class ImageAndAlbumRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT album_name FROM albums WHERE "
-					+ "account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = ?)";
+					+ "account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 

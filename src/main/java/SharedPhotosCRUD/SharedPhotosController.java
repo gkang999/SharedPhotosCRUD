@@ -202,12 +202,10 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 
 		List<Image> tr = ResultSetConvertor.convertToImageList(ImageAndAlbumRead.readPicturesFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector));
-
-		ConfigReader configFile = new ConfigReader();
 		
 		//get the base64 encodings and then return the list
 		for(int i = 0; i<tr.size(); i++) {
-			HttpPost post = new HttpPost("http://" + configFile.getProperty("mediaServiceIP") + ":8080/photos/get");
+			HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/get");
 			// add request parameter, form parameters
 	        List<NameValuePair> urlParameters = new ArrayList<>();
 	        urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
@@ -239,8 +237,6 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 		String idenReqOriginalName = idenReqBody.getPictureName();
 
-		ConfigReader configFile = new ConfigReader();
-
 		List<Image> tr = ResultSetConvertor.convertToImageList(ImageAndAlbumRead.readPictureFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), idenReqBody.getPictureName(), myConnector));
 		int duplicate = 0;
 		System.out.println(tr.size());
@@ -253,7 +249,7 @@ public class SharedPhotosController {
 			idenReqBody.setPictureName(idenReqOriginalName+"("+String.valueOf(duplicate)+")");
 		}
 		
-		HttpPost post = new HttpPost("http://" + configFile.getProperty("mediaServiceIP") + ":8080/photos/upload");
+		HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/upload");
 
         // add request parameter, form parameters
         List<NameValuePair> urlParameters = new ArrayList<>();
@@ -266,6 +262,9 @@ public class SharedPhotosController {
         JSONObject image;
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(post)) {
+        	if(response == null) {
+        		return 1;
+        	}
     		image = new JSONObject(EntityUtils.toString(response.getEntity()));
         } catch (Exception e) {
         	return 1;
@@ -288,6 +287,14 @@ public class SharedPhotosController {
 		return 0;
 	}
 	
+	/* Takes accountName, albumName, pictureName and deletes entry from DB
+	 * idenReqBody requires:
+	 * String: accountName
+	 * String: pictureName
+	 * String: albumName
+	 */
+	@PostMapping("/images/delete")
+=======
 	/**
 	   * sends image information to DAL to delete image
 	   * @param type Image containing account information
@@ -297,8 +304,6 @@ public class SharedPhotosController {
 	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-
-		ConfigReader configFile = new ConfigReader();
 		
 		ImageAndAlbumDelete.deletePictureFromDB(
 				idenReqBody.getAccountName(),
@@ -308,13 +313,23 @@ public class SharedPhotosController {
 
 		myConnector.closeJDBCConnection();
 
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/delete")
-				.queryParam("accountName", idenReqBody.getAccountName())
-				.queryParam("albumName", idenReqBody.getAlbumName())
-				.queryParam("photoName", idenReqBody.getPictureName());
+		
+		HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/delete");
 
-		return target.request(MediaType.APPLICATION_JSON).get(int.class);
+        // add request parameter, form parameters
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
+        urlParameters.add(new BasicNameValuePair("albumName", idenReqBody.getAlbumName()));
+        urlParameters.add(new BasicNameValuePair("photoName", idenReqBody.getPictureName()));
+
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(post)) {
+        } catch (Exception e) {
+        	return 1;
+        }
+
+		return 0;
 	}
 	
 	/**
@@ -326,8 +341,6 @@ public class SharedPhotosController {
 	public void updateImage(@RequestBody Image idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-
-		ConfigReader configFile = new ConfigReader();
 		
 		ImageUpdate.updatePictureNameToDB(
 				idenReqBody.getAccountName(), 
@@ -339,20 +352,20 @@ public class SharedPhotosController {
 		Client client = ClientBuilder.newClient();
 		
 		//grab base64 encoding
-		WebTarget target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/get")
+		WebTarget target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/get")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getPictureName());
 		idenReqBody.setBase64Encoding(target.request(MediaType.APPLICATION_JSON).get(Image.class).getBase64Encoding());
 		
 		//delete old image
-		target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/delete")
+		target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/delete")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getPictureName());
 		
 		//upload new image with new name
-		target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/upload")
+		target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/upload")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getNewPictureName())
@@ -372,25 +385,23 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		ConfigReader configFile = new ConfigReader();
-
 		Client client = ClientBuilder.newClient();
 		
 		//grab base64 encoding
-		WebTarget target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/get")
+		WebTarget target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/get")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getPictureName());
 		idenReqBody.setBase64Encoding(target.request(MediaType.APPLICATION_JSON).get(Image.class).getBase64Encoding());
 		
 		//delete old image
-		target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/delete")
+		target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/delete")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getPictureName());
 		
 		//upload new image with new name
-		target = client.target(configFile.getProperty("mediaServiceIP") + ":8080/photos/upload")
+		target = client.target(System.getenv("mediaServiceIP") + ":8080/photos/upload")
 				.queryParam("accountName", idenReqBody.getAccountName())
 				.queryParam("albumName", idenReqBody.getNewAlbumName())
 				.queryParam("photoName", idenReqBody.getPictureName())
