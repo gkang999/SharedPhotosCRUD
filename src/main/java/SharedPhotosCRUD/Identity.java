@@ -23,25 +23,25 @@ public class Identity {
 	}
 	
 	public void print() {
-		if(!this.accountName.equals(null)) {
+		if(this.accountName!=null) {
 			System.out.println("accountName:" + accountName);
 		}
-		if(!this.email.equals(null)) {
+		if(this.email!=null) {
 			System.out.println("email:" + email);
 		}
-		if(!this.accountOwner.equals(null)) {
+		if(this.accountOwner!=null) {
 			System.out.println("accountOwner:" + accountOwner);
 		}
-		if(!this.creationDate.equals(null)) {
+		if(this.creationDate!=null) {
 			System.out.println("creationDate:" + creationDate);
 		}
-		if(!this.roleType.equals(null)) {
+		if(this.roleType!=null) {
 			System.out.println("roleType:" + roleType);
 		}
-		if(!this.oldAccountName.equals(null)) {
+		if(this.oldAccountName!=null) {
 			System.out.println("oldAccountName:" + oldAccountName);
 		}
-		if(!this.accountPass.equals(null)) {
+		if(this.accountPass!=null) {
 			System.out.println("accountPass:" + accountPass);
 		}
 	}
