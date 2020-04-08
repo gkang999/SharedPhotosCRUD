@@ -21,6 +21,30 @@ public class Identity {
 		this.setCreationDate(creDate);
 		this.setRoleType(rType);
 	}
+	
+	public void print() {
+		if(!this.accountName.equals(null)) {
+			System.out.println("accountName:" + accountName);
+		}
+		if(!this.email.equals(null)) {
+			System.out.println("email:" + email);
+		}
+		if(!this.accountOwner.equals(null)) {
+			System.out.println("accountOwner:" + accountOwner);
+		}
+		if(!this.creationDate.equals(null)) {
+			System.out.println("creationDate:" + creationDate);
+		}
+		if(!this.roleType.equals(null)) {
+			System.out.println("roleType:" + roleType);
+		}
+		if(!this.oldAccountName.equals(null)) {
+			System.out.println("oldAccountName:" + oldAccountName);
+		}
+		if(!this.accountPass.equals(null)) {
+			System.out.println("accountPass:" + accountPass);
+		}
+	}
 
 	public String getAccountName() {
 		return accountName;
