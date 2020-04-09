@@ -79,7 +79,7 @@ public class SharedPhotosController {
 	 */
 	@PostMapping("/accounts/read")
 	public List<Identity> getAccountByAccountName(@RequestBody Identity idenReqBody) throws Exception {
-		idenReqBody.print();
+
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -98,7 +98,7 @@ public class SharedPhotosController {
 	 */
 	@PostMapping("/accounts/create")
 	public void postAccount(@RequestBody Identity idenReqBody) throws Exception {
-		idenReqBody.print();
+
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -117,7 +117,6 @@ public class SharedPhotosController {
 	 */
 	@PostMapping("/accounts/login")
 	public List<String> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
-		idenReqBody.print();
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
