@@ -421,11 +421,9 @@ public class SharedPhotosController {
 	 * @return List<Album> should contain single album requested
 	 */
 	@PostMapping("/albums/read")
-	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader Map<String, String> headers)
+	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
 			throws SQLException {
-		System.out.println(headers.get("Content-Type"));
-		System.out.println(headers.get("spdksessionKey"));
-		if (!this.isValid(headers.get("SPDKSessionKey"), idenReqBody.getAccountName())) {
+		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
 			return null;
 		}
 		MySQLConnector myConnector = new MySQLConnector();
