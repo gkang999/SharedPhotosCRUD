@@ -424,6 +424,7 @@ public class SharedPhotosController {
 	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
 			throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
+			System.out.println("invalid key");
 			return null;
 		}
 		MySQLConnector myConnector = new MySQLConnector();
