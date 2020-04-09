@@ -15,6 +15,8 @@ public class IdentityCreation {
 			String insertQueryStatement = "INSERT  INTO  accounts (role_id, account_name, email, account_owner, creation_date, pass_hash) SELECT "
 					+ "roles.role_id, ?, ?, ?, NOW(), ? FROM roles WHERE role_type = ? LIMIT 1";
  
+			System.out.println(hashedPass);
+			
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, accountName);
 			sharedPhotosPreparedStatement.setString(2, email);
