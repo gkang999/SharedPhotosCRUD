@@ -424,7 +424,7 @@ public class SharedPhotosController {
 	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader Map<String, String> headers)
 			throws SQLException {
 		System.out.println(headers.get("Content-Type"));
-		System.out.println(headers.get("SPDKSessionKey"));
+		System.out.println(headers.get("spdksessionKey"));
 		if (!this.isValid(headers.get("SPDKSessionKey"), idenReqBody.getAccountName())) {
 			return null;
 		}
