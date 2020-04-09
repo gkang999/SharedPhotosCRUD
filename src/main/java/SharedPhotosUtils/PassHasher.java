@@ -25,6 +25,7 @@ public class PassHasher {
     private static byte[] getSalt() throws NoSuchAlgorithmException
     {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        sr.setSeed(72651432);
         byte[] salt = new byte[16];
         sr.nextBytes(salt);
         return salt;
