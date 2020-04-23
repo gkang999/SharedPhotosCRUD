@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import SharedPhotosCRUD.Album;
 import SharedPhotosCRUD.Identity;
 import SharedPhotosCRUD.Image;
+import SharedPhotosCRUD.Group;
+import SharedPhotosCRUD.GroupMember;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -96,6 +98,41 @@ public class ResultSetConvertor {
 		  //Assuming you have a user object
 			Album acc = new Album();
 			acc.setAlbumName(albumName);
+	
+		  ll.add(acc);
+		}
+		
+		return ll;
+	}
+	
+	public static List<Group> convertToGroupList(ResultSet resultSet) throws SQLException {
+		List<Group> ll = new LinkedList<Group>();
+	
+		// Fetch each row from the result set
+		while (resultSet.next() && resultSet != null) {
+			String groupName = resultSet.getString("group_name");
+			String accountName = resultSet.getString("account_name");
+	
+		  //Assuming you have a user object
+			Group acc = new Group(groupName, accountName);
+	
+		  ll.add(acc);
+		}
+		
+		return ll;
+	}
+	
+	public static List<GroupMember> convertToGroupMemberList(ResultSet resultSet) throws SQLException {
+		List<GroupMember> ll = new LinkedList<GroupMember>();
+	
+		// Fetch each row from the result set
+		while (resultSet.next() && resultSet != null) {
+			int membershipStatus = resultSet.getInt("membership_status");
+			String accountName = resultSet.getString("account_name");
+			String groupName = resultSet.getString("group_name");
+	
+		  //Assuming you have a user object
+			GroupMember acc = new GroupMember(groupName, accountName, membershipStatus);
 	
 		  ll.add(acc);
 		}

@@ -1,5 +1,4 @@
 /SharedPhotosCRUD/
-/MySQLConnector/
-/IdentityDAL/
-/ImageDAL/
-/SharedPhotosUtils/
+/GroupDAL/
+/CRUDUtils/
+/GroupMemberDAL/
