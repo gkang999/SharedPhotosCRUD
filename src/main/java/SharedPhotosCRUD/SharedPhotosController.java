@@ -186,7 +186,7 @@ public class SharedPhotosController {
 	@PostMapping("/images/read")
 	public List<Image> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -230,7 +230,7 @@ public class SharedPhotosController {
 	@PostMapping("/images/create")
 	public int postImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -302,7 +302,7 @@ public class SharedPhotosController {
 	@PostMapping("/images/delete")
 	public int deleteImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -343,7 +343,7 @@ public class SharedPhotosController {
 	@PutMapping("/images/update/name")
 	public int updateImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -391,7 +391,7 @@ public class SharedPhotosController {
 	@PutMapping("/images/update/album")
 	public int updatePicturesAlbumToDB(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -443,7 +443,7 @@ public class SharedPhotosController {
 	@PostMapping("/albums/create")
 	public int createAlbum(@RequestBody Album idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -469,7 +469,7 @@ public class SharedPhotosController {
 	@PostMapping("/albums/read")
 	public List<Album> readAlbums(@RequestBody Album idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -571,7 +571,7 @@ public class SharedPhotosController {
 	@PostMapping("/groupmember/create")
 	public int createGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -591,7 +591,7 @@ public class SharedPhotosController {
 	@PostMapping("/groupmember/read")
 	public List<Group> readGroupMember(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -608,7 +608,7 @@ public class SharedPhotosController {
 	@PostMapping("/groupmember/delete")
 	public int deleteGroupMember(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
@@ -628,7 +628,7 @@ public class SharedPhotosController {
 	@PostMapping("/groupmember/update")
 	public int updateGroupMember(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
-			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
