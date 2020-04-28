@@ -2,6 +2,8 @@ package SharedPhotosCRUD;
 
 import java.util.List;
 import java.util.UUID;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -13,6 +15,7 @@ import CRUDUtils.*;
 import GroupDAL.GroupCreation;
 import GroupDAL.GroupDelete;
 import GroupDAL.GroupRead;
+import GroupMemberDAL.GroupMemberCreation;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
@@ -178,9 +181,17 @@ public class SharedPhotosController {
 	 * 
 	 * @param type Image containing account information
 	 * @return List<Image> should be containing the single requested entry
+	 * @throws IOException 
 	 */
 	@PostMapping("/images/read")
-	public List<Image> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody) throws Exception {
+	public List<Image> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return null;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -214,9 +225,17 @@ public class SharedPhotosController {
 	 * 
 	 * @param type Image containing account information
 	 * @return 0 on success, 1 otherwise
+	 * @throws IOException 
 	 */
 	@PostMapping("/images/create")
-	public int postImage(@RequestBody Image idenReqBody) throws Exception {
+	public int postImage(@RequestBody Image idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		String idenReqOriginalName = idenReqBody.getPictureName();
@@ -226,7 +245,6 @@ public class SharedPhotosController {
 		int duplicate = 0;
 		System.out.println(tr.size());
 		while (tr.size() > 0) {
-			System.out.println("in while");
 			duplicate += 1;
 			tr = ResultSetConvertor.convertToImageList(
 					ImageAndAlbumRead.readPictureFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
@@ -275,15 +293,21 @@ public class SharedPhotosController {
 	 * idenReqBody requires: String: accountName String: pictureName String:
 	 * albumName
 	 */
-	@PostMapping("/images/delete")
 	/**
 	 * sends image information to DAL to delete image
 	 * 
 	 * @param type Image containing account information
 	 * @return 0 on success, 1 otherwise
 	 */
-	@DeleteMapping("/images/delete")
-	public int deleteImage(@RequestBody Image idenReqBody) throws Exception {
+	@PostMapping("/images/delete")
+	public int deleteImage(@RequestBody Image idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -317,7 +341,14 @@ public class SharedPhotosController {
 	 * @return void
 	 */
 	@PutMapping("/images/update/name")
-	public void updateImage(@RequestBody Image idenReqBody) throws Exception {
+	public int updateImage(@RequestBody Image idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -347,6 +378,8 @@ public class SharedPhotosController {
 				.queryParam("base64Encoding", idenReqBody.getBase64Encoding());
 
 		myConnector.closeJDBCConnection();
+		
+		return 0;
 	}
 
 	/**
@@ -356,7 +389,14 @@ public class SharedPhotosController {
 	 * @return void
 	 */
 	@PutMapping("/images/update/album")
-	public void updatePicturesAlbumToDB(@RequestBody Image idenReqBody) throws Exception {
+	public int updatePicturesAlbumToDB(@RequestBody Image idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
@@ -386,6 +426,8 @@ public class SharedPhotosController {
 				idenReqBody.getAlbumName(), idenReqBody.getNewAlbumName(), myConnector);
 
 		myConnector.closeJDBCConnection();
+		
+		return 0;
 	}
 
 	/**************************************************
@@ -399,9 +441,11 @@ public class SharedPhotosController {
 	 * @return 0 on success
 	 */
 	@PostMapping("/albums/create")
-	public int createAlbum(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
+	public int createAlbum(@RequestBody Album idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
 			throws SQLException {
-		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return 2;
 		}
@@ -423,9 +467,11 @@ public class SharedPhotosController {
 	 * @return List<Album> should contain single album requested
 	 */
 	@PostMapping("/albums/read")
-	public List<Album> readAlbums(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
-			throws SQLException {
-		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
+	public List<Album> readAlbums(@RequestBody Album idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return null;
 		}
@@ -504,6 +550,87 @@ public class SharedPhotosController {
 	public int deleteGroup(@RequestBody Group idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
 			throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getGroupOwner())) {
+			System.out.println("invalid key");
+			return 2;
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
+		} catch (Exception e) {
+			return 1;
+		}
+
+		return 0;
+	}
+	
+	/**************************************************
+	 ************ Group CRUD operations ***************
+	 **************************************************/
+	
+	@PostMapping("/groupmember/create")
+	public int createGroupMember(@RequestBody GroupMember idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), myConnector);
+		} catch (Exception e) {
+			return 1;
+		}
+
+		return 0;
+	}
+	
+	@PostMapping("/groupmember/read")
+	public List<Group> readGroupMember(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return null;
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		List<Group> tr = ResultSetConvertor
+				.convertToGroupList(GroupRead.readGroupsByOwnerFromDB(idenReqBody.getGroupOwner(), myConnector));
+
+		return tr;
+	}
+	
+	@PostMapping("/groupmember/delete")
+	public int deleteGroupMember(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 2;
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
+		} catch (Exception e) {
+			return 1;
+		}
+
+		return 0;
+	}
+	
+	@PostMapping("/groupmember/update")
+	public int updateGroupMember(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount)") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return 2;
 		}
