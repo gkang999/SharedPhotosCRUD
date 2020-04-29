@@ -36,7 +36,7 @@ public class IdentityCreation {
 		 
 		try {
 			String insertQueryStatement = "INSERT  INTO  accounts (account_id, role_id, account_name, creation_date) "
-					+ "SELECT groups.groups_id, roles.role_id, ?, NOW() "
+					+ "SELECT groups.group_id, roles.role_id, ?, NOW() "
 					+ "FROM roles, groups "
 					+ "WHERE role_type = ? "
 					+ "AND groups.group_name = ?";
