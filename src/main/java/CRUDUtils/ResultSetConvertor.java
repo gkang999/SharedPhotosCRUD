@@ -48,10 +48,9 @@ public class ResultSetConvertor {
 			String accountName = resultSet.getString("account_name");
 			String email = resultSet.getString("email");
 			String accountOwner = resultSet.getString("account_owner");
-			String creationDate = resultSet.getString("creation_date");
 			String roleType = resultSet.getString("role_type");
 	
-		  Identity acc = new Identity(accountName, email, accountOwner, creationDate, roleType);
+		  Identity acc = new Identity(accountName, email, accountOwner, roleType);
 	
 		  ll.add(acc);
 		}

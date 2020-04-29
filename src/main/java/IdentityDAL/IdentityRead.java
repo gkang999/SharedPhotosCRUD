@@ -82,7 +82,7 @@ public class IdentityRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT account_name, email, account_owner, creation_date, role_type FROM accounts, roles "
+			String getQueryStatement = "SELECT account_name, email, account_owner, role_type FROM accounts, roles "
 					+ "WHERE role_type = roles.role_type "
 					+ "AND roles.role_id = accounts.role_id "
 					+ "AND accounts.account_name = ? "

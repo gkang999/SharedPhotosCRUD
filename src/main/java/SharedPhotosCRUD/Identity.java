@@ -14,11 +14,10 @@ public class Identity {
 	}
 	
 	//response body read
-	public Identity(String accName, String em, String accOwn, String creDate, String rType){
+	public Identity(String accName, String em, String accOwn, String rType){
 		this.setAccountName(accName);
 		this.setEmail(em);
 		this.setAccountOwner(accOwn);
-		this.setCreationDate(creDate);
 		this.setRoleType(rType);
 	}
 	
