@@ -1,7 +1,5 @@
 package SharedPhotosCRUD;
 
-import java.util.Arrays;
-import java.util.Collections;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
@@ -10,9 +8,6 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 

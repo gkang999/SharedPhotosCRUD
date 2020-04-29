@@ -3,7 +3,6 @@ package SharedPhotosCRUD;
 import java.util.List;
 import java.util.UUID;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -514,9 +513,11 @@ public class SharedPhotosController {
 	 **************************************************/
 	
 	@PostMapping("/groups/create")
-	public int createGroup(@RequestBody Group idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
-			throws SQLException {
-		if (!this.isValid(sessionKey, idenReqBody.getGroupOwner())) {
+	public int createGroup(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return 2;
 		}
@@ -524,6 +525,8 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 		try {
 			GroupCreation.addGroupToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
+			//create dummy account corresponding to group for album/picture uploads
+			IdentityCreation.addGroupAccountToDB(idenReqBody.getGroupName(), "admin", myConnector);
 		} catch (Exception e) {
 			return 1;
 		}
@@ -532,9 +535,11 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groups/read")
-	public List<Group> readGroups(@RequestBody Group idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
-			throws SQLException {
-		if (!this.isValid(sessionKey, idenReqBody.getGroupOwner())) {
+	public List<Group> readGroups(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return null;
 		}
@@ -547,9 +552,11 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groups/delete")
-	public int deleteGroup(@RequestBody Group idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
-			throws SQLException {
-		if (!this.isValid(sessionKey, idenReqBody.getGroupOwner())) {
+	public int deleteGroup(@RequestBody Group idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return 2;
 		}

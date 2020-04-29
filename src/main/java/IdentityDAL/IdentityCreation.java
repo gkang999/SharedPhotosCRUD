@@ -31,4 +31,28 @@ public class IdentityCreation {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void addGroupAccountToDB(String groupName, String roleType, MySQLConnector databaseConnector) {
+		 
+		try {
+			String insertQueryStatement = "INSERT  INTO  accounts (account_id, role_id, account_name, creation_date) "
+					+ "SELECT groups.groups_id, roles.role_id, ?, NOW() "
+					+ "FROM roles, groups "
+					+ "WHERE role_type = ? "
+					+ "AND groups.group_name = ?";
+
+			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
+			sharedPhotosPreparedStatement.setString(1, groupName);
+			sharedPhotosPreparedStatement.setString(2, roleType);
+			sharedPhotosPreparedStatement.setString(3, groupName);
+ 
+			// execute insert SQL statement
+			sharedPhotosPreparedStatement.executeUpdate();
+			SysOLog.log(groupName + " added successfully");
+		} catch (
+ 
+		SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
