@@ -52,7 +52,7 @@ public class GroupMemberRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT account_name, membership_status, group_name FROM accounts "
+			String getQueryStatement = "SELECT account_name, account_owner, membership_status, group_name FROM accounts "
 					+ "INNER JOIN group_member ON accounts.account_id = group_member.account_id "
 					+ "INNER JOIN groups ON groups.group_id = group_member.group_id "
 					+ "WHERE groups.group_name = ?;";

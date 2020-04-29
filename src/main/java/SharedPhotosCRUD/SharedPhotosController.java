@@ -15,6 +15,9 @@ import GroupDAL.GroupCreation;
 import GroupDAL.GroupDelete;
 import GroupDAL.GroupRead;
 import GroupMemberDAL.GroupMemberCreation;
+import GroupMemberDAL.GroupMemberDelete;
+import GroupMemberDAL.GroupMemberRead;
+import GroupMemberDAL.GroupMemberUpdate;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
@@ -530,6 +533,13 @@ public class SharedPhotosController {
 		} catch (Exception e) {
 			return 1;
 		}
+		
+		//add self to newly created group
+		try {
+			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
+		} catch (Exception e) {
+			return 1;
+		}
 
 		return 0;
 	}
@@ -596,7 +606,7 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groupmember/read")
-	public List<Group> readGroupMember(@RequestBody Group idenReqBody, 
+	public List<Group> readGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -607,13 +617,13 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<Group> tr = ResultSetConvertor
-				.convertToGroupList(GroupRead.readGroupsByOwnerFromDB(idenReqBody.getGroupOwner(), myConnector));
+				.convertToGroupList(GroupMemberRead.readGroupMemberByGroupFromDB(idenReqBody.getGroupName(), myConnector));
 
 		return tr;
 	}
 	
 	@PostMapping("/groupmember/delete")
-	public int deleteGroupMember(@RequestBody Group idenReqBody, 
+	public int deleteGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -624,7 +634,7 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
+			GroupMemberDelete.deleteGroupMemberFromDB(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
 		} catch (Exception e) {
 			return 1;
 		}
@@ -633,7 +643,7 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groupmember/update")
-	public int updateGroupMember(@RequestBody Group idenReqBody, 
+	public int updateGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -644,7 +654,7 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
+			GroupMemberUpdate.updateDataToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), idenReqBody.getMemberShipStatus(), myConnector);
 		} catch (Exception e) {
 			return 1;
 		}

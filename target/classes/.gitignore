@@ -1,1 +1,5 @@
 /IdentityDAL/
+/GroupDAL/
+/GroupMemberDAL/
+/SharedPhotosCRUD/
+/CRUDUtils/

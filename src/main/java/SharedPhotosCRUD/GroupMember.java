@@ -3,6 +3,7 @@ package SharedPhotosCRUD;
 public class GroupMember {
 	private String groupName;
 	private String accountName;
+	private String accountOwner;
 	private int membershipStatus;	
 	
 	public GroupMember(String groupName) {
@@ -15,6 +16,12 @@ public class GroupMember {
 	}
 	
 	public GroupMember(String groupName, String accountName, int membershipStatus) {
+		this.groupName  = groupName;
+		this.accountName = accountName;
+		this.membershipStatus = membershipStatus;
+	}
+	
+	public GroupMember(String groupName, String accountName, String accountOwner, int membershipStatus) {
 		this.groupName  = groupName;
 		this.accountName = accountName;
 		this.membershipStatus = membershipStatus;
@@ -37,5 +44,13 @@ public class GroupMember {
 	}
 	public void setMemberShipStatus(int memberShipStatus) {
 		this.membershipStatus = memberShipStatus;
+	}
+
+	public String getAccountOwner() {
+		return accountOwner;
+	}
+
+	public void setAccountOwner(String accountOwner) {
+		this.accountOwner = accountOwner;
 	}
 }

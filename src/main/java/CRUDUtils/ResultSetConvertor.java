@@ -128,10 +128,11 @@ public class ResultSetConvertor {
 		while (resultSet.next() && resultSet != null) {
 			int membershipStatus = resultSet.getInt("membership_status");
 			String accountName = resultSet.getString("account_name");
+			String accountOwner = resultSet.getString("account_owner");
 			String groupName = resultSet.getString("group_name");
 	
 		  //Assuming you have a user object
-			GroupMember acc = new GroupMember(groupName, accountName, membershipStatus);
+			GroupMember acc = new GroupMember(groupName, accountName, accountOwner, membershipStatus);
 	
 		  ll.add(acc);
 		}
