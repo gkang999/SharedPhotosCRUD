@@ -614,7 +614,7 @@ public class SharedPhotosController {
 		return 0;
 	}
 	
-	@PostMapping("/groupmember/read")
+	@PostMapping("/groupmember/readbygroup")
 	public List<Group> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
@@ -631,7 +631,7 @@ public class SharedPhotosController {
 		return tr;
 	}
 	
-	@PostMapping("/groupmember/read")
+	@PostMapping("/groupmember/readbymember")
 	public List<Group> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
