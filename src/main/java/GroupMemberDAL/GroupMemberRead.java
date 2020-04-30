@@ -17,8 +17,7 @@ public class GroupMemberRead {
 			String getQueryStatement = "SELECT group_name, account_owner, membership_status, account_name FROM group_member "
 					+ "INNER JOIN groups ON group_member.group_id = groups.group_id "
 					+ "INNER JOIN accounts ON accounts.account_id = group_member.account_id "
-					+ "WHERE group_member.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
-					+ "AND group_member.membership_status = 1;";
+					+ "WHERE group_member.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
