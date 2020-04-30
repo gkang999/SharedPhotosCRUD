@@ -68,6 +68,19 @@ public class SharedPhotosController {
 			}
 		}
 	}
+	
+	@PostMapping("/session")
+	public int validateSession(
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return 1;
+		}
+
+		return 0;
+	}
 
 	/**************************************************
 	 ************ Account CRUD operations *************
