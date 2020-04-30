@@ -615,7 +615,7 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groupmember/read")
-	public List<Group> readGroupMember(@RequestBody GroupMember idenReqBody, 
+	public List<Group> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -627,6 +627,23 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 		List<Group> tr = ResultSetConvertor
 				.convertToGroupList(GroupMemberRead.readGroupMemberByGroupFromDB(idenReqBody.getGroupName(), myConnector));
+
+		return tr;
+	}
+	
+	@PostMapping("/groupmember/read")
+	public List<Group> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return null;
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		List<Group> tr = ResultSetConvertor
+				.convertToGroupList(GroupMemberRead.readGroupMemberByMemberFromDB(idenReqBody.getAccountName(), myConnector));
 
 		return tr;
 	}
