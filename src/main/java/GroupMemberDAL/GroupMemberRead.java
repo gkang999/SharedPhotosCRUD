@@ -83,4 +83,43 @@ public class GroupMemberRead {
  
 		return null;
 	}
+	
+	public static ResultSet readGroupMemberByGroupAndAccountFromDB(String groupName, String accountName, MySQLConnector databaseConnector) {
+		 
+		try {
+			// MySQL Select Query Tutorial
+			String getQueryStatement = "SELECT account_name, account_owner, membership_status, group_name FROM accounts "
+					+ "INNER JOIN group_member ON accounts.account_id = group_member.account_id "
+					+ "INNER JOIN groups ON groups.group_id = group_member.group_id "
+					+ "WHERE groups.group_name = BINARY ? "
+					+ "AND accounts.account_name = BINARY ?";
+ 
+			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
+
+			sharedPhotosPreparedStatement.setString(1, groupName);
+			sharedPhotosPreparedStatement.setString(2, accountName);
+ 
+			// Execute the Query, and get a java ResultSet
+			ResultSet rs = sharedPhotosPreparedStatement.executeQuery();
+ 
+			// Let's iterate through the java ResultSet
+			/*while (rs.next()) {
+				String accountName = rs.getString("account_name");
+				String email = rs.getString("email");
+				String accountOwner = rs.getString("account_owner");
+				String creationDate = rs.getString("creation_date");
+				String roleType = rs.getString("role_type");
+ 
+				// Simply Print the results
+				SysOLog.log( String.format("%s, %s, %s, %s, %s\n", accountName, email, accountOwner, creationDate, roleType));
+			}*/
+			
+			return rs;
+ 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+ 
+		return null;
+	}
 }

@@ -606,6 +606,11 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
+			List<GroupMember> tr = ResultSetConvertor
+					.convertToGroupMemberList(GroupMemberRead.readGroupMemberByGroupAndAccountFromDB(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector));
+			if(tr.size()>0) {
+				return 1;
+			}
 			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), myConnector);
 		} catch (Exception e) {
 			return 1;
