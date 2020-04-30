@@ -6,20 +6,9 @@ public class GroupMember {
 	private String accountOwner;
 	private int membershipStatus;	
 	
-	/*
+	
 	public GroupMember(String groupName) {
 		this.groupName = groupName;
-	}
-	
-	public GroupMember(String accountName, int membershipStatus) {
-		this.accountName = accountName;
-		this.membershipStatus = membershipStatus;
-	}
-	
-	public GroupMember(String groupName, String accountName, int membershipStatus) {
-		this.groupName  = groupName;
-		this.accountName = accountName;
-		this.membershipStatus = membershipStatus;
 	}
 	
 	public GroupMember(String groupName, String accountName, String accountOwner, int membershipStatus) {
@@ -27,7 +16,7 @@ public class GroupMember {
 		this.accountName = accountName;
 		this.membershipStatus = membershipStatus;
 	}
-	*/
+	
 
 	public String getGroupName() {
 		return groupName;
