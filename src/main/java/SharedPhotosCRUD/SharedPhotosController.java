@@ -578,7 +578,7 @@ public class SharedPhotosController {
 			//delete child group_members
 			GroupMemberDelete.deleteGroupMemberFromDBByGroup(idenReqBody.getGroupName(), myConnector);
 			//delete child album
-			
+			ImageAndAlbumDelete.deleteAlbumFromDBByAccount(idenReqBody.getGroupOwner(), myConnector);
 			//delete child account
 			IdentityDelete.deleteDataFromDB(idenReqBody.getGroupName(), myConnector);
 			//delete parent group
