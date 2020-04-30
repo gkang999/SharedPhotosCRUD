@@ -15,8 +15,8 @@ public class GroupRead {
 		try {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT group_name, account_name FROM groups, accounts "
-					+ "WHERE groups.account_id = (SELECT accounts.account_id FROM accounts WHERE account_name = ?) "
-					+ "AND  accounts.account_name = ?";
+					+ "WHERE groups.account_id = (SELECT accounts.account_id FROM accounts WHERE account_name = BINARY ?) "
+					+ "AND  accounts.account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 

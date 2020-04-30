@@ -12,8 +12,8 @@ public class GroupMemberUpdate {
  
 		try {
 			String insertQueryStatement = "UPDATE group_member SET membership_status = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = ?) "
-					+ "AND group_id = (SELECT group_id FROM groups WHERE group_name = ?)";
+					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
+					+ "AND group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?)";
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setInt(1, membershipStatus);
 			sharedPhotosPreparedStatement.setString(2, accountName);

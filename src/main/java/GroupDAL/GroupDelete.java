@@ -14,7 +14,7 @@ public class GroupDelete {
  
 		try {
 			String insertQueryStatement = "DELETE FROM groups WHERE group_name = BINARY ? "
-					+ "AND account_id = (SELECT account_id FROM accounts WHERE account_name = ?)";
+					+ "AND account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);

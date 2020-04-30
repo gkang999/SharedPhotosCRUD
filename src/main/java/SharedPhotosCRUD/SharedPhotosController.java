@@ -537,9 +537,11 @@ public class SharedPhotosController {
 		//add self to newly created group
 		try {
 			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
+			GroupMemberUpdate.updateDataToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), 1, myConnector);
 		} catch (Exception e) {
 			return 1;
 		}
+		
 
 		return 0;
 	}
@@ -573,6 +575,13 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
+			//delete child group_members
+			GroupMemberDelete.deleteGroupMemberFromDBByGroup(idenReqBody.getGroupName(), myConnector);
+			//delete child album
+			
+			//delete child account
+			IdentityDelete.deleteDataFromDB(idenReqBody.getGroupName(), myConnector);
+			//delete parent group
 			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
 		} catch (Exception e) {
 			return 1;
@@ -642,6 +651,7 @@ public class SharedPhotosController {
 		return 0;
 	}
 	
+	//1 for active, 0 for pending
 	@PostMapping("/groupmember/update")
 	public int updateGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 

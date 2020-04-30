@@ -62,4 +62,34 @@ public class ImageAndAlbumDelete {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void deleteAlbumFromDBByAccount(String accountName, MySQLConnector databaseConnector) {
+		 
+		try {
+			//deleting child pictures
+			String insertQueryStatement = "DELETE FROM pictures "
+					+ "INNER JOIN albums ON pictures.album_id = albums.album_id "
+					+ "INNER JOIN accounts ON albums.account_id = accounts.account_id "
+					+ "WHERE accounts.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)";
+ 
+				sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
+				sharedPhotosPreparedStatement.setString(1, accountName);
+	 
+				// execute insert SQL statement
+			sharedPhotosPreparedStatement.executeUpdate();
+			SysOLog.log("pictures deleted successfully");
+			
+			//delete parent albums
+			insertQueryStatement = "DELETE FROM albums WHERE albums.account_id = (SELECT account_id FROM accounts WHERE accounts.account_name = BINARY ?)";
+ 
+			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
+			sharedPhotosPreparedStatement.setString(1, accountName);
+ 
+			// execute insert SQL statement
+			sharedPhotosPreparedStatement.executeUpdate();
+			SysOLog.log("All of " + "accountName" + "'s albums deleted successfully");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
