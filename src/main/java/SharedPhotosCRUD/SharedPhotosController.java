@@ -615,7 +615,7 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/groupmember/readbygroup")
-	public List<Group> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
+	public List<GroupMember> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -625,14 +625,14 @@ public class SharedPhotosController {
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-		List<Group> tr = ResultSetConvertor
-				.convertToGroupList(GroupMemberRead.readGroupMemberByGroupFromDB(idenReqBody.getGroupName(), myConnector));
+		List<GroupMember> tr = ResultSetConvertor
+				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByGroupFromDB(idenReqBody.getGroupName(), myConnector));
 
 		return tr;
 	}
 	
 	@PostMapping("/groupmember/readbymember")
-	public List<Group> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
+	public List<GroupMember> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
@@ -642,8 +642,8 @@ public class SharedPhotosController {
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-		List<Group> tr = ResultSetConvertor
-				.convertToGroupList(GroupMemberRead.readGroupMemberByMemberFromDB(idenReqBody.getAccountName(), myConnector));
+		List<GroupMember> tr = ResultSetConvertor
+				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByMemberFromDB(idenReqBody.getAccountName(), myConnector));
 
 		return tr;
 	}
