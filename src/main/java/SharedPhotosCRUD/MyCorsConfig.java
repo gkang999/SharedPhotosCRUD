@@ -32,7 +32,6 @@ public class MyCorsConfig implements Filter {
         } else {
             chain.doFilter(req, res);
         }
-        System.out.println("er");
     }
 
     @Override
