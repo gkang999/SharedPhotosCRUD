@@ -112,16 +112,22 @@ public class SharedPhotosController {
 	 * @return void
 	 */
 	@PostMapping("/accounts/create")
-	public void postAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public int postAccount(@RequestBody Identity idenReqBody) throws Exception {
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		IdentityCreation.addDataToDB(idenReqBody.getAccountName(), idenReqBody.getEmail(),
-				idenReqBody.getAccountOwner(), idenReqBody.getRoleType(),
-				PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector);
+		try {
+			IdentityCreation.addDataToDB(idenReqBody.getAccountName(), idenReqBody.getEmail(),
+					idenReqBody.getAccountOwner(), idenReqBody.getRoleType(),
+					PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector);
 
-		myConnector.closeJDBCConnection();
+			myConnector.closeJDBCConnection();
+		} catch (Exception e) {
+			return 1;
+		}
+		
+		return 0;
 	}
 
 	/**
@@ -258,7 +264,6 @@ public class SharedPhotosController {
 		List<Image> tr = ResultSetConvertor.convertToImageList(ImageAndAlbumRead.readPictureFromDB(
 				idenReqBody.getAccountName(), idenReqBody.getAlbumName(), idenReqBody.getPictureName(), myConnector));
 		int duplicate = 0;
-		System.out.println(tr.size());
 		while (tr.size() > 0) {
 			duplicate += 1;
 			tr = ResultSetConvertor.convertToImageList(
@@ -299,7 +304,6 @@ public class SharedPhotosController {
 			return 1;
 		}
 
-		System.out.println(tr.size());
 		return 0;
 	}
 
