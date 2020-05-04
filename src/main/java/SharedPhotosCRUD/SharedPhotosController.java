@@ -699,8 +699,8 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			System.out.println(idenReqBody.getAccountName() + idenReqBody.getGroupName() + idenReqBody.getMemberShipStatus());
-			GroupMemberUpdate.updateDataToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), idenReqBody.getMemberShipStatus(), myConnector);
+			System.out.println(idenReqBody.getAccountName() + idenReqBody.getGroupName() + idenReqBody.getMembershipStatus());
+			GroupMemberUpdate.updateDataToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), idenReqBody.getMembershipStatus(), myConnector);
 		} catch (Exception e) {
 			return 1;
 		}

@@ -33,7 +33,7 @@ public class GroupMember {
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
 	}
-	public int getMemberShipStatus() {
+	public int getMembershipStatus() {
 		return membershipStatus;
 	}
 	public void setMemberShipStatus(int memberShipStatus) {
