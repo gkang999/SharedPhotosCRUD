@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import IdentityDAL.*;
 import ImageDAL.*;
@@ -144,7 +145,7 @@ public class SharedPhotosController {
 	 * @param type Identity containing account information
 	 */
 	@PostMapping("/accounts/login")
-	public ResponseEntity<String> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<List<String>> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -159,9 +160,11 @@ public class SharedPhotosController {
 			UUID temp = UUID.randomUUID();
 			this.SessionKeys.add(
 					new Triplet<UUID, LocalDateTime, String>(temp, LocalDateTime.now(), idenReqBody.getAccountName()));
-			return new ResponseEntity<String>(temp.toString(), HttpStatus.OK);
+			List<String> tmp = new LinkedList<String>();
+			tmp.add(temp.toString());
+			return new ResponseEntity<List<String>>(tmp, HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Login failed", HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<String>>(HttpStatus.UNAUTHORIZED);
 	}
 
 	/**
