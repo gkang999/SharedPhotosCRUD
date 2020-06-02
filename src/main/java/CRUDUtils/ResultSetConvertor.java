@@ -162,7 +162,10 @@ public class ResultSetConvertor {
 	}
 	
 	public static int countFromResultSet(ResultSet resultSet, String countType) throws SQLException {
-		return resultSet.getInt(countType);
+		if (resultSet.next() && resultSet != null) {
+			return resultSet.getInt(countType);
+		}
+		return -1;
 	}
 	
 }
