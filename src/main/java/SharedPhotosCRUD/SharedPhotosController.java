@@ -149,13 +149,13 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		List<Identity> tr = ResultSetConvertor
-				.convertToIdentityList(IdentityRead.readIdentityCountByAccountAndHPass(idenReqBody.getAccountName(),
-						PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector));
+		int matchingAccounts = ResultSetConvertor
+				.countFromResultSet(IdentityRead.readIdentityCountByAccountAndHPass(idenReqBody.getAccountName(),
+						PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector), "NumberOfIdentity");
 
 		myConnector.closeJDBCConnection();
 
-		if (tr.size() == 1) {
+		if (matchingAccounts == 1) {
 			UUID temp = UUID.randomUUID();
 			this.SessionKeys.add(
 					new Triplet<UUID, LocalDateTime, String>(temp, LocalDateTime.now(), idenReqBody.getAccountName()));
@@ -672,9 +672,8 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			List<GroupMember> tr = ResultSetConvertor
-					.convertToGroupMemberList(GroupMemberRead.readGroupMemberCountByGroupAndOwner(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector));
-			if(tr.size()>0) {
+			int matchingRecordCount = ResultSetConvertor.countFromResultSet(GroupMemberRead.readGroupMemberCountByGroupAndOwner(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector), "NumberOfGroupMember");
+			if(matchingRecordCount>0) {
 				return new ResponseEntity<Integer>(1, HttpStatus.OK);
 			}
 			GroupMemberCreation.addGroupMember(idenReqBody.getAccountName(), idenReqBody.getGroupName(), myConnector);
@@ -777,9 +776,8 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			List<GroupMember> tr = ResultSetConvertor
-					.convertToGroupMemberList(GroupAlbumRead.readGroupAlbumCountByGroupAndAlbum(idenReqBody.getGroupName(), idenReqBody.getAlbumName(), myConnector));
-			if(tr.size()>0) {
+			int matchingRecordsCount = ResultSetConvertor.countFromResultSet(GroupAlbumRead.readGroupAlbumCountByGroupAndAlbum(idenReqBody.getGroupName(), idenReqBody.getAlbumName(), myConnector), "NumberOfGroupAlbum");
+			if(matchingRecordsCount>0) {
 				return new ResponseEntity<Integer>(1, HttpStatus.OK);
 			}
 			GroupAlbumCreation.addGroupAlbum(idenReqBody.getAlbumName(), idenReqBody.getGroupName(), myConnector);
@@ -944,14 +942,14 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 		String idenReqOriginalName = idenReqBody.getPictureName();
 
-		List<Image> tr = ResultSetConvertor.convertToImageList(
-				ImageRead.readPictureCountByAccountAlbumPicture("GuestAccount", idenReqBody.getAlbumName(), idenReqBody.getNewPictureName(), myConnector));
+		int matchingRecordsCount = ResultSetConvertor.countFromResultSet(
+				ImageRead.readPictureCountByAccountAlbumPicture("GuestAccount", idenReqBody.getAlbumName(), idenReqBody.getNewPictureName(), myConnector), "NumberOfPictures");
 		int duplicate = 0;
-		while (tr.size() > 0) {
+		while (matchingRecordsCount > 0) {
 			duplicate += 1;
-			tr = ResultSetConvertor.convertToImageList(
+			matchingRecordsCount = ResultSetConvertor.countFromResultSet(
 					ImageRead.readPictureCountByAccountAlbumPicture("GuestAccount", idenReqBody.getAlbumName(),
-							idenReqOriginalName + "(" + String.valueOf(duplicate) + ")", myConnector));
+							idenReqOriginalName + "(" + String.valueOf(duplicate) + ")", myConnector), "NumberOfPictures");
 		}
 		if (duplicate > 0) {
 			idenReqBody.setPictureName(idenReqOriginalName + "(" + String.valueOf(duplicate) + ")");
