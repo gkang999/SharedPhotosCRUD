@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class IdentityUpdate {
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	 
-	public static void updateDataToDB(String oldAccountName, String newAccountName, String email, String accountOwner, String roleType, MySQLConnector databaseConnector) {
+	public static int updateIdentityName(String oldAccountName, String newAccountName, String email, String accountOwner, String roleType, MySQLConnector databaseConnector) {
  
 		try {
 			String insertQueryStatement = "UPDATE accounts SET account_name = ?, email = ?, account_owner = ?, role_id = (SELECT roles.role_id FROM roles WHERE role_type = BINARY ?) WHERE account_name = BINARY ?";
@@ -23,10 +23,10 @@ public class IdentityUpdate {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(oldAccountName + " updated successfully to " + newAccountName);
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 1;
 		}
 	}
 }

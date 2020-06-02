@@ -10,12 +10,13 @@ public class GroupCreation {
 
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	 
-	public static void addGroupToDB(String accountName, String groupName, MySQLConnector databaseConnector) {
+	public static int addGroup(String accountName, String groupName, MySQLConnector databaseConnector) {
  
 		try {
 			String insertQueryStatement = "INSERT INTO groups (account_id, group_name) "
 					+ "SELECT accounts.account_id, ? FROM accounts "
-					+ "WHERE account_name = BINARY ?";
+					+ "WHERE account_name = BINARY ? "
+					+ "ON DUPLICATE KEY UPDATE group_id = group_id";
 
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);
@@ -24,10 +25,10 @@ public class GroupCreation {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(accountName + " added successfully");
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 1;
 		}
 	}
 	

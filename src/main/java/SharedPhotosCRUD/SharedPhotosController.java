@@ -11,6 +11,9 @@ import ImageDAL.*;
 import MySQLConnector.*;
 import SharedPhotosUtils.PassHasher;
 import CRUDUtils.*;
+import GroupAlbumDAL.GroupAlbumCreation;
+import GroupAlbumDAL.GroupAlbumDelete;
+import GroupAlbumDAL.GroupAlbumRead;
 import GroupDAL.GroupCreation;
 import GroupDAL.GroupDelete;
 import GroupDAL.GroupRead;
@@ -35,11 +38,18 @@ import org.javatuples.Triplet;
 import java.time.LocalDateTime;
 
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import AlbumDAL.AlbumCreation;
+import AlbumDAL.AlbumDelete;
+import AlbumDAL.AlbumRead;
+import AlbumDAL.AlbumUpdate;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -70,16 +80,16 @@ public class SharedPhotosController {
 	}
 	
 	@PostMapping("/session")
-	public int validateSession(
+	public ResponseEntity<Integer> validateSession(
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.UNAUTHORIZED);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
 	}
 
 	/**************************************************
@@ -90,60 +100,57 @@ public class SharedPhotosController {
 	 * sends account information to DAL to read account
 	 * 
 	 * @param type Identity containing account information
-	 * @return List<Identity> should be containing the single requested entry
 	 */
 	@PostMapping("/accounts/read")
-	public List<Identity> getAccountByAccountName(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<List<Identity>> getAccountByAccountName(@RequestBody Identity idenReqBody) throws Exception {
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
 		List<Identity> tr = ResultSetConvertor
-				.convertToIdentityList(IdentityRead.readDataFromDB(idenReqBody.getAccountName(), myConnector));
+				.convertToIdentityList(IdentityRead.readIdentity(idenReqBody.getAccountName(), myConnector));
 
 		myConnector.closeJDBCConnection();
-		return tr;
+		return new ResponseEntity<List<Identity>>(tr, HttpStatus.OK);
 	}
 
 	/**
 	 * sends account information to DAL to create account
 	 * 
 	 * @param type Identity containing account information
-	 * @return void
 	 */
 	@PostMapping("/accounts/create")
-	public int postAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<Integer> postAccount(@RequestBody Identity idenReqBody) throws Exception {
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
 		try {
-			IdentityCreation.addDataToDB(idenReqBody.getAccountName(), idenReqBody.getEmail(),
+			IdentityCreation.addIdentity(idenReqBody.getAccountName(), idenReqBody.getEmail(),
 					idenReqBody.getAccountOwner(), idenReqBody.getRoleType(),
 					PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector);
 
 			myConnector.closeJDBCConnection();
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 		
-		return 0;
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
 	}
 
 	/**
 	 * sends account information to DAL to validate account
 	 * 
 	 * @param type Identity containing account information
-	 * @return void
 	 */
 	@PostMapping("/accounts/login")
-	public List<String> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<String> validateAccount(@RequestBody Identity idenReqBody) throws Exception {
 
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
 		List<Identity> tr = ResultSetConvertor
-				.convertToIdentityList(IdentityRead.validateLogin(idenReqBody.getAccountName(),
+				.convertToIdentityList(IdentityRead.readIdentityCountByAccountAndHPass(idenReqBody.getAccountName(),
 						PassHasher.generateStrongPasswordHash(idenReqBody.getAccountPass()), myConnector));
 
 		myConnector.closeJDBCConnection();
@@ -152,72 +159,71 @@ public class SharedPhotosController {
 			UUID temp = UUID.randomUUID();
 			this.SessionKeys.add(
 					new Triplet<UUID, LocalDateTime, String>(temp, LocalDateTime.now(), idenReqBody.getAccountName()));
-			List<String> ret = new ArrayList<String>();
-			ret.add(temp.toString());
-			return ret;
+			return new ResponseEntity<String>(temp.toString(), HttpStatus.OK);
 		}
-
-		return null;
+		return new ResponseEntity<String>("Login failed", HttpStatus.UNAUTHORIZED);
 	}
 
 	/**
 	 * sends account information to DAL to delete account
 	 * 
 	 * @param type Identity containing account information
-	 * @return void
 	 */
 	@DeleteMapping("/accounts/delete")
-	public void deleteAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<Integer> deleteAccount(@RequestBody Identity idenReqBody) {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		IdentityDelete.deleteDataFromDB(idenReqBody.getAccountName(), myConnector);
+		int sqlResponse = IdentityDelete.deleteIdentity(idenReqBody.getAccountName(), myConnector);
 
 		myConnector.closeJDBCConnection();
+		
+		return sqlResponse == 0 ? new ResponseEntity<Integer>(0, HttpStatus.OK) : new ResponseEntity<Integer>(1, HttpStatus.OK);
 	}
 
 	/**
 	 * sends account information to DAL to update account
 	 * 
 	 * @param type Identity containing account information
-	 * @return void
 	 */
 	@PutMapping("/accounts/update")
-	public void updateAccount(@RequestBody Identity idenReqBody) throws Exception {
+	public ResponseEntity<Integer> updateAccount(@RequestBody Identity idenReqBody) throws Exception {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		IdentityUpdate.updateDataToDB(idenReqBody.getOldAccountName(), idenReqBody.getAccountName(),
+		int sqlResponse = IdentityUpdate.updateIdentityName(idenReqBody.getOldAccountName(), idenReqBody.getAccountName(),
 				idenReqBody.getEmail(), idenReqBody.getAccountOwner(), idenReqBody.getRoleType(), myConnector);
 
 		myConnector.closeJDBCConnection();
+		
+		return sqlResponse == 0 ? new ResponseEntity<Integer>(0, HttpStatus.OK) : new ResponseEntity<Integer>(1, HttpStatus.OK);
 	}
 
 	/**************************************************
 	 ************ Image CRUD operations ***************
 	 **************************************************/
 
+
 	/**
 	 * sends image information to DAL to read image
 	 * 
 	 * @param type Image containing account information
-	 * @return List<Image> should be containing the single requested entry
 	 * @throws IOException 
 	 */
 	@PostMapping("/images/read")
-	public List<Image> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody, 
+	public ResponseEntity<List<Image>> getPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return null;
+			return new ResponseEntity<List<Image>>(HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		List<Image> tr = ResultSetConvertor.convertToImageList(ImageAndAlbumRead
-				.readPicturesFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector));
+		List<Image> tr = ResultSetConvertor.convertToImageList(ImageRead
+				.readPictures(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector));
 
 		// get the base64 encodings and then return the list
 		for (int i = 0; i < tr.size(); i++) {
@@ -238,37 +244,36 @@ public class SharedPhotosController {
 		}
 
 		myConnector.closeJDBCConnection();
-		return tr;
+		return new ResponseEntity<List<Image>>(tr, HttpStatus.OK);
 	}
 
 	/**
 	 * sends image information to DAL to create image
 	 * 
 	 * @param type Image containing account information
-	 * @return 0 on success, 1 otherwise
 	 * @throws IOException 
 	 */
 	@PostMapping("/images/create")
-	public int postImage(@RequestBody Image idenReqBody, 
+	public ResponseEntity<Integer> postImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		String idenReqOriginalName = idenReqBody.getPictureName();
 
-		List<Image> tr = ResultSetConvertor.convertToImageList(ImageAndAlbumRead.readPictureFromDB(
-				idenReqBody.getAccountName(), idenReqBody.getAlbumName(), idenReqBody.getPictureName(), myConnector));
+		int count = ResultSetConvertor.countFromResultSet(ImageRead.readPictureCountByAccountAlbumPicture(
+				idenReqBody.getAccountName(), idenReqBody.getAlbumName(), idenReqBody.getPictureName(), myConnector), "NumberOfPictures");
 		int duplicate = 0;
-		while (tr.size() > 0) {
+		while (count > 0) {
 			duplicate += 1;
-			tr = ResultSetConvertor.convertToImageList(
-					ImageAndAlbumRead.readPictureFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
-							idenReqOriginalName + "(" + String.valueOf(duplicate) + ")", myConnector));
+			count = ResultSetConvertor.countFromResultSet(
+					ImageRead.readPictureCountByAccountAlbumPicture(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
+							idenReqOriginalName + "(" + String.valueOf(duplicate) + ")", myConnector), "NumberOfPictures");
 		}
 		if (duplicate > 0) {
 			idenReqBody.setPictureName(idenReqOriginalName + "(" + String.valueOf(duplicate) + ")");
@@ -288,23 +293,24 @@ public class SharedPhotosController {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
 			if (response == null) {
-				return 1;
+				return new ResponseEntity<Integer>(1, HttpStatus.OK);
 			}
 			image = new JSONObject(EntityUtils.toString(response.getEntity()));
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
+		int sqlResponse = 0;
 		try {
-			ImageAndAlbumCreation.addPictureToDB(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
+			sqlResponse = ImageCreation.addPicture(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
 					idenReqBody.getAlbumName(), image.getString("photoExtension"), myConnector);
 
 			myConnector.closeJDBCConnection();
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	/*
@@ -316,21 +322,21 @@ public class SharedPhotosController {
 	 * sends image information to DAL to delete image
 	 * 
 	 * @param type Image containing account information
-	 * @return 0 on success, 1 otherwise
 	 */
 	@PostMapping("/images/delete")
-	public int deleteImage(@RequestBody Image idenReqBody, 
+	public ResponseEntity<Integer> deleteImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 
-		ImageAndAlbumDelete.deletePictureFromDB(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
+		
+		int sqlResponse = ImageDelete.deletePicture(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
 				idenReqBody.getAlbumName(), myConnector);
 
 		myConnector.closeJDBCConnection();
@@ -347,32 +353,28 @@ public class SharedPhotosController {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	/**
 	 * sends image information to DAL to update account
 	 * 
 	 * @param type Image containing account information
-	 * @return void
 	 */
 	@PutMapping("/images/update/name")
-	public int updateImage(@RequestBody Image idenReqBody, 
+	public ResponseEntity<Integer> updateImage(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-
-		ImageUpdate.updatePictureNameToDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
-				idenReqBody.getPictureName(), idenReqBody.getNewPictureName(), myConnector);
 
 		Client client = ClientBuilder.newClient();
 
@@ -395,26 +397,28 @@ public class SharedPhotosController {
 				.queryParam("albumName", idenReqBody.getAlbumName())
 				.queryParam("photoName", idenReqBody.getNewPictureName())
 				.queryParam("base64Encoding", idenReqBody.getBase64Encoding());
+		
+		int sqlResponse = ImageUpdate.updatePictureName(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
+				idenReqBody.getPictureName(), idenReqBody.getNewPictureName(), myConnector);
 
 		myConnector.closeJDBCConnection();
-		
-		return 0;
+
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	/**
 	 * sends image information to DAL to update album of image
 	 * 
 	 * @param type Image containing image information
-	 * @return void
 	 */
 	@PutMapping("/images/update/album")
-	public int updatePicturesAlbumToDB(@RequestBody Image idenReqBody, 
+	public ResponseEntity<Integer> updatePicturesAlbum(@RequestBody Image idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -441,12 +445,12 @@ public class SharedPhotosController {
 				.queryParam("photoName", idenReqBody.getPictureName())
 				.queryParam("base64Encoding", idenReqBody.getBase64Encoding());
 
-		ImageUpdate.updatePicturesAlbumToDB(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
+		int sqlResponse = ImageUpdate.updatePicturesAlbum(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
 				idenReqBody.getAlbumName(), idenReqBody.getNewAlbumName(), myConnector);
 
 		myConnector.closeJDBCConnection();
-		
-		return 0;
+
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	/**************************************************
@@ -457,74 +461,122 @@ public class SharedPhotosController {
 	 * sends album information to DAL to create album
 	 * 
 	 * @param type Album containing album information
-	 * @return 0 on success
 	 */
 	@PostMapping("/albums/create")
-	public int createAlbum(@RequestBody Album idenReqBody, 
+	public ResponseEntity<Integer> createAlbum(@RequestBody Album idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
+		int sqlResponse = 0;
 		try {
-			ImageAndAlbumCreation.addAlbumToDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+			sqlResponse = AlbumCreation.addAlbum(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	/**
 	 * sends album information to DAL to read album
 	 * 
 	 * @param type Album containing album information
-	 * @return List<Album> should contain single album requested
 	 */
 	@PostMapping("/albums/read")
-	public List<Album> readAlbums(@RequestBody Album idenReqBody, 
+	public ResponseEntity<List<Album>> readAlbums(@RequestBody Album idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return null;
+			return new ResponseEntity<List<Album>>(HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<Album> tr = ResultSetConvertor
-				.convertToAlbumList(ImageAndAlbumRead.readAlbumsFromDB(idenReqBody.getAccountName(), myConnector));
+				.convertToAlbumList(AlbumRead.readAlbums(idenReqBody.getAccountName(), myConnector));
 
-		return tr;
+		return new ResponseEntity<List<Album>>(tr, HttpStatus.OK);
 	}
 
 	/**
 	 * sends image information to DAL to delete album
 	 * 
 	 * @param type Album containing album information
-	 * @return 0 on success
 	 */
 	@PostMapping("/albums/delete")
-	public int deleteAlbum(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
+	public ResponseEntity<Integer> deleteAlbum(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
 			throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
+		
+		int sqlResponse = 0;
+		//delete pictures of album first
 		try {
-			ImageAndAlbumDelete.deleteAlbumFromDB(idenReqBody.getAccountName(), idenReqBody.getAlbumName(),
-					myConnector);
+			sqlResponse += ImageDelete.deletePicturesByAlbum(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+		
+		try {
+			sqlResponse += AlbumDelete.deleteAlbum(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
+	}
+	
+	@PostMapping("/albums/public")
+	public ResponseEntity<Integer> publicizeAlbum(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
+			throws SQLException {
+		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
+			System.out.println("invalid key");
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		
+		int sqlResponse = 0;
+		
+		try {
+			sqlResponse = AlbumUpdate.updateAlbumPublicStatus(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), 1, myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
+	}
+	
+	@PostMapping("/albums/unpublic")
+	public ResponseEntity<Integer> unpublicizeAlbum(@RequestBody Album idenReqBody, @RequestHeader("SPDKSessionKey") String sessionKey)
+			throws SQLException {
+		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
+			System.out.println("invalid key");
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		
+		int sqlResponse = 0;
+		
+		try {
+			sqlResponse = AlbumUpdate.updateAlbumPublicStatus(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), 0, myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 
 	
@@ -533,183 +585,448 @@ public class SharedPhotosController {
 	 **************************************************/
 	
 	@PostMapping("/groups/create")
-	public int createGroup(@RequestBody Group idenReqBody, 
+	public ResponseEntity<Integer> createGroup(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
+		int sqlResponse = 0;
 		try {
-			GroupCreation.addGroupToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
-			//create dummy account corresponding to group for album/picture uploads
-			IdentityCreation.addGroupAccountToDB(idenReqBody.getGroupName(), "admin", myConnector);
+			sqlResponse += GroupCreation.addGroup(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 		
 		//add self to newly created group
 		try {
-			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
-			GroupMemberUpdate.updateDataToDB(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), 1, myConnector);
+			sqlResponse += GroupMemberCreation.addGroupMember(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), myConnector);
+			sqlResponse += GroupMemberUpdate.updateGroupMemberStatus(idenReqBody.getGroupOwner(), idenReqBody.getGroupName(), 1, myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 		
-
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 	
 	@PostMapping("/groups/read")
-	public List<Group> readGroups(@RequestBody Group idenReqBody, 
+	public ResponseEntity<List<Group>> readGroups(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return null;
+			return new ResponseEntity<List<Group>>(HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<Group> tr = ResultSetConvertor
-				.convertToGroupList(GroupRead.readGroupsByOwnerFromDB(idenReqBody.getGroupOwner(), myConnector));
+				.convertToGroupList(GroupRead.readGroupsByOwner(idenReqBody.getGroupOwner(), myConnector));
 
-		return tr;
+		return new ResponseEntity<List<Group>>(tr, HttpStatus.OK);
 	}
 	
 	@PostMapping("/groups/delete")
-	public int deleteGroup(@RequestBody Group idenReqBody, 
+	public ResponseEntity<Integer> deleteGroup(@RequestBody Group idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
+		int sqlResponse = 0;
 		try {
-			//delete child group_members
-			GroupMemberDelete.deleteGroupMemberFromDBByGroup(idenReqBody.getGroupName(), myConnector);
-			//delete child album
-			ImageAndAlbumDelete.deleteAlbumFromDBByAccount(idenReqBody.getGroupOwner(), myConnector);
-			//delete child account
-			IdentityDelete.deleteDataFromDB(idenReqBody.getGroupName(), myConnector);
+			//delete child group_member(s)
+			sqlResponse += GroupMemberDelete.deleteGroupMemberByGroup(idenReqBody.getGroupName(), myConnector);
+			//delete child group_album(s)
+			sqlResponse += GroupAlbumDelete.deleteGroupAlbumByGroup(idenReqBody.getGroupName(), myConnector);
 			//delete parent group
-			GroupDelete.deleteGroupFromDB(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
+			sqlResponse += GroupDelete.deleteGroup(idenReqBody.getGroupName(), idenReqBody.getGroupOwner(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(sqlResponse, HttpStatus.OK);
 	}
 	
 	/**************************************************
-	 ************ Group CRUD operations ***************
+	 ********** Group Member CRUD operations **********
 	 **************************************************/
 	
 	@PostMapping("/groupmember/create")
-	public int createGroupMember(@RequestBody GroupMember idenReqBody, 
+	public ResponseEntity<Integer> createGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
 			List<GroupMember> tr = ResultSetConvertor
-					.convertToGroupMemberList(GroupMemberRead.readGroupMemberByGroupAndAccountFromDB(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector));
+					.convertToGroupMemberList(GroupMemberRead.readGroupMemberCountByGroupAndOwner(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector));
 			if(tr.size()>0) {
-				return 1;
+				return new ResponseEntity<Integer>(1, HttpStatus.OK);
 			}
-			GroupMemberCreation.addGroupMemberToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), myConnector);
+			GroupMemberCreation.addGroupMember(idenReqBody.getAccountName(), idenReqBody.getGroupName(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
 	}
 	
 	@PostMapping("/groupmember/readbygroup")
-	public List<GroupMember> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
+	public ResponseEntity<List<GroupMember>> readGroupMemberGroup(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return null;
+			return new ResponseEntity<List<GroupMember>>(HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<GroupMember> tr = ResultSetConvertor
-				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByGroupFromDB(idenReqBody.getGroupName(), myConnector));
+				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByGroup(idenReqBody.getGroupName(), myConnector));
 
-		return tr;
+		return new ResponseEntity<List<GroupMember>>(tr, HttpStatus.OK);
 	}
 	
 	@PostMapping("/groupmember/readbymember")
-	public List<GroupMember> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
+	public ResponseEntity<List<GroupMember>> readGroupMemberAccount(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return null;
+			return new ResponseEntity<List<GroupMember>>(HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		List<GroupMember> tr = ResultSetConvertor
-				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByMemberFromDB(idenReqBody.getAccountName(), myConnector));
+				.convertToGroupMemberList(GroupMemberRead.readGroupMemberByMember(idenReqBody.getAccountName(), myConnector));
 
-		return tr;
+		return new ResponseEntity<List<GroupMember>>(tr, HttpStatus.OK);
 	}
 	
 	@PostMapping("/groupmember/delete")
-	public int deleteGroupMember(@RequestBody GroupMember idenReqBody, 
+	public ResponseEntity<Integer> deleteGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			GroupMemberDelete.deleteGroupMemberFromDB(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
+			GroupMemberDelete.deleteGroupMember(idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
 	}
 	
 	//1 for active, 0 for pending
 	@PostMapping("/groupmember/update")
-	public int updateGroupMember(@RequestBody GroupMember idenReqBody, 
+	public ResponseEntity<Integer> updateGroupMember(@RequestBody GroupMember idenReqBody, 
 			@RequestHeader("SPDKSessionKey") String sessionKey, 
 			@RequestHeader("SPDKKeyAccount") String sessionAccount)
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return 2;
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
 			System.out.println(idenReqBody.getAccountName() + idenReqBody.getGroupName() + idenReqBody.getMembershipStatus());
-			GroupMemberUpdate.updateDataToDB(idenReqBody.getAccountName(), idenReqBody.getGroupName(), idenReqBody.getMembershipStatus(), myConnector);
+			GroupMemberUpdate.updateGroupMemberStatus(idenReqBody.getAccountName(), idenReqBody.getGroupName(), idenReqBody.getMembershipStatus(), myConnector);
 		} catch (Exception e) {
-			return 1;
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
 		}
 
-		return 0;
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+	
+	/**************************************************
+	 ********** Group Album CRUD operations ***********
+	 **************************************************/
+	
+	@PostMapping("/groupalbum/create")
+	public ResponseEntity<Integer> createGroupAlbum(@RequestBody GroupAlbum idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			List<GroupMember> tr = ResultSetConvertor
+					.convertToGroupMemberList(GroupAlbumRead.readGroupAlbumCountByGroupAndAlbum(idenReqBody.getGroupName(), idenReqBody.getAlbumName(), myConnector));
+			if(tr.size()>0) {
+				return new ResponseEntity<Integer>(1, HttpStatus.OK);
+			}
+			GroupAlbumCreation.addGroupAlbum(idenReqBody.getAlbumName(), idenReqBody.getGroupName(), myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+	
+	@PostMapping("/groupalbum/readbygroup")
+	public ResponseEntity<List<GroupAlbum>> readGroupAlbumByGroup(@RequestBody GroupMember idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		List<GroupAlbum> tr = ResultSetConvertor
+				.convertToGroupAlbumList(GroupAlbumRead.readGroupAlbumByGroup(idenReqBody.getGroupName(), myConnector));
+
+		return new ResponseEntity<List<GroupAlbum>>(tr, HttpStatus.OK);
+	}
+	
+	@PostMapping("/groupalbum/readbyalbum")
+	public ResponseEntity<List<GroupAlbum>> readGroupAlbumByAlbum(@RequestBody GroupAlbum idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		List<GroupAlbum> tr = ResultSetConvertor
+				.convertToGroupAlbumList(GroupAlbumRead.readGroupAlbumByAlbum(idenReqBody.getAlbumName(), myConnector));
+
+		return new ResponseEntity<List<GroupAlbum>>(tr, HttpStatus.OK);
+	}
+	
+	@PostMapping("/groupalbum/delete")
+	public ResponseEntity<Integer> deleteGroupAlbum(@RequestBody GroupAlbum idenReqBody, 
+			@RequestHeader("SPDKSessionKey") String sessionKey, 
+			@RequestHeader("SPDKKeyAccount") String sessionAccount)
+			throws SQLException, IOException {
+		if (!this.isValid(sessionKey, sessionAccount)) {
+			System.out.println("invalid key");
+			return new ResponseEntity<Integer>(2, HttpStatus.UNAUTHORIZED);
+		}
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			GroupAlbumDelete.deleteGroupAlbum(idenReqBody.getGroupName(), idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+	
+	/**************************************************
+	 ********** Public Album CRUD operations **********
+	 **************************************************/
+	
+	@PostMapping("/public/albums/create")
+	public ResponseEntity<Integer> createPublicAlbum(@RequestBody Album idenReqBody)
+			throws SQLException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			AlbumCreation.addAlbum("GuestAccount", idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+
+	@PostMapping("/public/albums/read")
+	public ResponseEntity<List<Album>> readPublicAlbums(@RequestBody Album idenReqBody)
+			throws SQLException, IOException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+
+		List<Album> tr = ResultSetConvertor
+				.convertToAlbumList(AlbumRead.readPublicAlbumsFromDB(myConnector));
+
+		return new ResponseEntity<List<Album>>(tr, HttpStatus.OK);
+	}
+
+	@PostMapping("/public/albums/delete")
+	public ResponseEntity<Integer> deletePublicAlbum(@RequestBody Album idenReqBody)
+			throws SQLException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		try {
+			AlbumDelete.deleteAlbum("GuestAccount", idenReqBody.getAlbumName(), myConnector);
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+	
+	/**************************************************
+	 ********** Public Image CRUD operations **********
+	 **************************************************/
+	
+	/**
+	 * sends image information to DAL to read image
+	 * 
+	 * @param type Image containing account information
+	 * @throws IOException 
+	 */
+	@PostMapping("/public/images/read")
+	public ResponseEntity<List<Image>> getPublicPicturesByAlbumAndAccountName(@RequestBody Image idenReqBody)
+			throws SQLException, IOException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+
+		List<Image> tr = ResultSetConvertor.convertToImageList(ImageRead
+				.readPictures("GuestAccount", idenReqBody.getAlbumName(), myConnector));
+
+		// get the base64 encodings and then return the list
+		for (int i = 0; i < tr.size(); i++) {
+			HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/get");
+			// add request parameter, form parameters
+			List<NameValuePair> urlParameters = new ArrayList<>();
+			urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
+			urlParameters.add(new BasicNameValuePair("albumName", idenReqBody.getAlbumName()));
+			urlParameters.add(new BasicNameValuePair("photoName", tr.get(i).getPictureName()));
+			urlParameters.add(new BasicNameValuePair("photoExtension", tr.get(i).getPictureExtension()));
+
+			post.setEntity(new UrlEncodedFormEntity(urlParameters));
+			try (CloseableHttpClient httpClient = HttpClients.createDefault();
+					CloseableHttpResponse response = httpClient.execute(post)) {
+				tr.get(i).setBase64Encoding(
+						new JSONObject(EntityUtils.toString(response.getEntity())).getString("base64Encoding"));
+			} catch (Exception e) {
+				return new ResponseEntity<List<Image>>(HttpStatus.OK);
+			}
+		}
+
+		myConnector.closeJDBCConnection();
+		return new ResponseEntity<List<Image>>(tr, HttpStatus.OK);
+	}
+
+	/**
+	 * sends image information to DAL to create image
+	 * 
+	 * @param type Image containing account information
+	 * @throws IOException 
+	 */
+	@PostMapping("/public/images/create")
+	public ResponseEntity<Integer> postPublicImage(@RequestBody Image idenReqBody)
+			throws SQLException, IOException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+		String idenReqOriginalName = idenReqBody.getPictureName();
+
+		List<Image> tr = ResultSetConvertor.convertToImageList(
+				ImageRead.readPictureCountByAccountAlbumPicture("GuestAccount", idenReqBody.getAlbumName(), idenReqBody.getNewPictureName(), myConnector));
+		int duplicate = 0;
+		while (tr.size() > 0) {
+			duplicate += 1;
+			tr = ResultSetConvertor.convertToImageList(
+					ImageRead.readPictureCountByAccountAlbumPicture("GuestAccount", idenReqBody.getAlbumName(),
+							idenReqOriginalName + "(" + String.valueOf(duplicate) + ")", myConnector));
+		}
+		if (duplicate > 0) {
+			idenReqBody.setPictureName(idenReqOriginalName + "(" + String.valueOf(duplicate) + ")");
+		}
+
+		HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/upload");
+
+		// add request parameter, form parameters
+		List<NameValuePair> urlParameters = new ArrayList<>();
+		urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
+		urlParameters.add(new BasicNameValuePair("albumName", idenReqBody.getAlbumName()));
+		urlParameters.add(new BasicNameValuePair("photoName", idenReqBody.getPictureName()));
+		urlParameters.add(new BasicNameValuePair("base64Encoding", idenReqBody.getBase64Encoding()));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		JSONObject image;
+		try (CloseableHttpClient httpClient = HttpClients.createDefault();
+				CloseableHttpResponse response = httpClient.execute(post)) {
+			if (response == null) {
+				return new ResponseEntity<Integer>(1, HttpStatus.OK);
+			}
+			image = new JSONObject(EntityUtils.toString(response.getEntity()));
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		try {
+			ImageCreation.addPicture(idenReqBody.getAccountName(), idenReqBody.getPictureName(),
+					idenReqBody.getAlbumName(), image.getString("photoExtension"), myConnector);
+
+			myConnector.closeJDBCConnection();
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
+	}
+
+	/*
+	 * Takes accountName, albumName, pictureName and deletes entry from DB
+	 * idenReqBody requires: String: accountName String: pictureName String:
+	 * albumName
+	 */
+	/**
+	 * sends image information to DAL to delete image
+	 * 
+	 * @param type Image containing account information
+	 */
+	@PostMapping("/public/images/delete")
+	public ResponseEntity<Integer> deletePublicImage(@RequestBody Image idenReqBody)
+			throws SQLException, IOException {
+		MySQLConnector myConnector = new MySQLConnector();
+		myConnector.makeJDBCConnection();
+
+		ImageDelete.deletePicture("GuestAccount", idenReqBody.getPictureName(),
+				idenReqBody.getAlbumName(), myConnector);
+
+		myConnector.closeJDBCConnection();
+
+		HttpPost post = new HttpPost("http://" + System.getenv("mediaServiceIP") + ":8080/photos/delete");
+
+		// add request parameter, form parameters
+		List<NameValuePair> urlParameters = new ArrayList<>();
+		urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
+		urlParameters.add(new BasicNameValuePair("albumName", idenReqBody.getAlbumName()));
+		urlParameters.add(new BasicNameValuePair("photoName", idenReqBody.getPictureName()));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		try (CloseableHttpClient httpClient = HttpClients.createDefault();
+				CloseableHttpResponse response = httpClient.execute(post)) {
+		} catch (Exception e) {
+			return new ResponseEntity<Integer>(1, HttpStatus.OK);
+		}
+
+		return new ResponseEntity<Integer>(0, HttpStatus.OK);
 	}
 	
 }

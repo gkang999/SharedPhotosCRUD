@@ -1,4 +1,8 @@
+/AlbumDAL/
+/GroupDAL/
 /SharedPhotosCRUD/
+/GroupAlbumDAL/
+/GroupMemberDAL/
+/IdentityDAL/
 /ImageDAL/
 /CRUDUtils/
-/GroupMemberDAL/

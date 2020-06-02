@@ -10,11 +10,13 @@ public class GroupDelete {
 	
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	 
-	public static void deleteGroupFromDB(String groupName, String accountName, MySQLConnector databaseConnector) {
+	public static int deleteGroup(String groupName, String accountName, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "DELETE FROM groups WHERE group_name = BINARY ? "
-					+ "AND account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)";
+			String insertQueryStatement = "DELETE groups.* FROM groups " + 
+					"INNER JOIN accounts ON accounts.account_id = groups.account_id" + 
+					"WHERE group_name = BINARY ? " +
+					"AND account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);
@@ -23,10 +25,10 @@ public class GroupDelete {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(groupName + " deleted successfully");
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 1;
 		}
 	}
 }

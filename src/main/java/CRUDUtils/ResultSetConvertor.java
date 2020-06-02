@@ -7,6 +7,7 @@ import SharedPhotosCRUD.Album;
 import SharedPhotosCRUD.Identity;
 import SharedPhotosCRUD.Image;
 import SharedPhotosCRUD.Group;
+import SharedPhotosCRUD.GroupAlbum;
 import SharedPhotosCRUD.GroupMember;
 
 import java.sql.ResultSet;
@@ -93,10 +94,13 @@ public class ResultSetConvertor {
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
 			String albumName = resultSet.getString("album_name");
+			String accountName = resultSet.getString("account_name");
+			
 	
 		  //Assuming you have a user object
 			Album acc = new Album();
 			acc.setAlbumName(albumName);
+			acc.setAccountName(accountName);
 	
 		  ll.add(acc);
 		}
@@ -138,6 +142,27 @@ public class ResultSetConvertor {
 		}
 		
 		return ll;
+	}
+	
+	public static List<GroupAlbum> convertToGroupAlbumList(ResultSet resultSet) throws SQLException {
+		List<GroupAlbum> ll = new LinkedList<GroupAlbum>();
+	
+		// Fetch each row from the result set
+		while (resultSet.next() && resultSet != null) {
+			String albumName = resultSet.getString("album_name");
+			String groupName = resultSet.getString("group_name");
+	
+		  //Assuming you have a user object
+			GroupAlbum acc = new GroupAlbum(groupName, albumName);
+	
+		  ll.add(acc);
+		}
+		
+		return ll;
+	}
+	
+	public static int countFromResultSet(ResultSet resultSet, String countType) throws SQLException {
+		return resultSet.getInt(countType);
 	}
 	
 }

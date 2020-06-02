@@ -1,4 +1,4 @@
-package GroupMemberDAL;
+package GroupAlbumDAL;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -6,28 +6,28 @@ import java.sql.SQLException;
 import MySQLConnector.MySQLConnector;
 import SharedPhotosUtils.SysOLog;
 
-public class GroupMemberCreation {
+public class GroupAlbumCreation {
 	
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	
-	public static int addGroupMember(String accountName, String groupName, MySQLConnector databaseConnector) {
+	public static int addGroupAlbum(String albumName, String groupName, MySQLConnector databaseConnector) {
 		 
 		//membership_status: 0=pending, 1=active, 2=inactive
 		
 		try {
-			String insertQueryStatement = "INSERT INTO group_member (group_id, account_id, membership_status) "
-					+ "SELECT group_id, accounts.account_id, 0 "
-					+ "FROM groups, accounts WHERE groups.group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?) "
-					+ "AND accounts.account_id = (SELECT accounts.account_id FROM accounts WHERE account_name = BINARY ?) "
+			String insertQueryStatement = "INSERT INTO group_album (group_id, album_id) "
+					+ "SELECT group_id, albums.album_id, 0 "
+					+ "FROM groups, albums WHERE groups.group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?) "
+					+ "AND albums.album_id = (SELECT albums.album_id FROM albums WHERE album_name = BINARY ?) "
 					+ "ON DUPLICATE KEY UPDATE group_id = group_id";
 
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);
-			sharedPhotosPreparedStatement.setString(2, accountName);
+			sharedPhotosPreparedStatement.setString(2, albumName);
  
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
-			SysOLog.log(accountName + " added successfully");
+			SysOLog.log(albumName + " added successfully");
 			return 0;
 		} catch (SQLException e) {
 			e.printStackTrace();

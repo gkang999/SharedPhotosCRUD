@@ -8,7 +8,7 @@ import MySQLConnector.MySQLConnector;
 public class GroupMemberUpdate {
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	 
-	public static void updateDataToDB(String accountName, String groupName, int membershipStatus, MySQLConnector databaseConnector) {
+	public static int updateGroupMemberStatus(String accountName, String groupName, int membershipStatus, MySQLConnector databaseConnector) {
  
 		try {
 			String insertQueryStatement = "UPDATE group_member SET membership_status = ? "
@@ -21,10 +21,10 @@ public class GroupMemberUpdate {
  
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 0;
 		}
 	}
 }

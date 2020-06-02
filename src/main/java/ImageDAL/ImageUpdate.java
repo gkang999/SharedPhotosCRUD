@@ -9,7 +9,7 @@ public class ImageUpdate {
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	 
 	//Moves a picture to another album
-	public static void updatePicturesAlbumToDB(String accountName, String pictureName, String oldAlbumName, String newAlbumName, MySQLConnector databaseConnector) {
+	public static int updatePicturesAlbum(String accountName, String pictureName, String oldAlbumName, String newAlbumName, MySQLConnector databaseConnector) {
  
 		try {
 			String insertQueryStatement = "UPDATE pictures SET album_id = "
@@ -27,15 +27,15 @@ public class ImageUpdate {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(pictureName + " location updated successfully from " + oldAlbumName + " to " + newAlbumName);
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 1;
 		}
 	}
 	
 	//renames a picture
-	public static void updatePictureNameToDB(String accountName, String albumName, String oldPictureName, String newPictureName, MySQLConnector databaseConnector) {
+	public static int updatePictureName(String accountName, String albumName, String oldPictureName, String newPictureName, MySQLConnector databaseConnector) {
 		 
 		try {
 			String insertQueryStatement = "UPDATE pictures SET picture_name = ? "
@@ -52,32 +52,11 @@ public class ImageUpdate {
 			// execute insert SQL statement
 			sharedPhotosPreparedStatement.executeUpdate();
 			SysOLog.log(oldPictureName + " updated successfully to " + newPictureName);
-		} catch (
- 
-		SQLException e) {
+			return 0;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return 1;
 		}
 	}
 	
-	public static void updateAlbumNameToDB(String accountName, String oldAlbumName, String newAlbumName, MySQLConnector databaseConnector) {
-		 
-		try {
-			String insertQueryStatement = "UPDATE albums SET album_name = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
-					+ "AND album_name = BINARY ?);";
- 
-			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
-			sharedPhotosPreparedStatement.setString(1, newAlbumName);
-			sharedPhotosPreparedStatement.setString(2, accountName);
-			sharedPhotosPreparedStatement.setString(3, oldAlbumName);
- 
-			// execute insert SQL statement
-			sharedPhotosPreparedStatement.executeUpdate();
-			SysOLog.log(oldAlbumName + " updated successfully to " + newAlbumName);
-		} catch (
- 
-		SQLException e) {
-			e.printStackTrace();
-		}
-	}
 }
