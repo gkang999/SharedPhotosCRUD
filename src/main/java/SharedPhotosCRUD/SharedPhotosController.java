@@ -87,7 +87,7 @@ public class SharedPhotosController {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.OK);
 		}
 
 		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
