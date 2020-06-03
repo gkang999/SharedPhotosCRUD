@@ -56,8 +56,7 @@ public class ImageRead {
 					"INNER JOIN accounts ON pictures.account_id = accounts.account_id " + 
 					"WHERE pictures.picture_name = BINARY ? " + 
 					"AND albums.album_name = BINARY ? " +
-					"AND account_name = BINARY ?" + 
-					"AND albums.public = ?";
+					"AND account_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
