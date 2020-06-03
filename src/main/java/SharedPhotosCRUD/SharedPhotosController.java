@@ -134,10 +134,10 @@ public class SharedPhotosController {
 			myConnector.closeJDBCConnection();
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.OK);
 		}
 
-		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class SharedPhotosController {
 			return new ResponseEntity<List<String>>(new LinkedList<String>(Arrays.asList(temp.toString())),
 					HttpStatus.OK);
 		}
-		return new ResponseEntity<List<String>>(HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<String>>(HttpStatus.OK);
 	}
 
 	/**
@@ -183,8 +183,8 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 
 		return sqlResponse == 0
-				? new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.UNAUTHORIZED)
-				: new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.UNAUTHORIZED);
+				? new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK)
+				: new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 	}
 
 	/**
@@ -204,8 +204,8 @@ public class SharedPhotosController {
 		myConnector.closeJDBCConnection();
 
 		return sqlResponse == 0
-				? new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.UNAUTHORIZED)
-				: new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.UNAUTHORIZED);
+				? new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK)
+				: new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 	}
 
 	/**************************************************
@@ -224,7 +224,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Image>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Image>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -267,7 +267,7 @@ public class SharedPhotosController {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(2)),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -304,12 +304,12 @@ public class SharedPhotosController {
 				CloseableHttpResponse response = httpClient.execute(post)) {
 			if (response == null) {
 				return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
-						HttpStatus.UNAUTHORIZED);
+						HttpStatus.OK);
 			}
 			image = new JSONObject(EntityUtils.toString(response.getEntity()));
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.OK);
 		}
 
 		int sqlResponse = 0;
@@ -320,11 +320,11 @@ public class SharedPhotosController {
 			myConnector.closeJDBCConnection();
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.OK);
 		}
 
 		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(sqlResponse)),
-				HttpStatus.UNAUTHORIZED);
+				HttpStatus.OK);
 	}
 
 	/*
@@ -343,7 +343,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -365,10 +365,10 @@ public class SharedPhotosController {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(post)) {
 		} catch (Exception e) {
-			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 		}
 
-		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(sqlResponse)), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(sqlResponse)), HttpStatus.OK);
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -428,7 +428,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -478,7 +478,7 @@ public class SharedPhotosController {
 			throws SQLException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -503,7 +503,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Album>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Album>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -523,7 +523,7 @@ public class SharedPhotosController {
 			@RequestHeader("SPDKSessionKey") String sessionKey) throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -552,7 +552,7 @@ public class SharedPhotosController {
 			@RequestHeader("SPDKSessionKey") String sessionKey) throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -574,7 +574,7 @@ public class SharedPhotosController {
 			@RequestHeader("SPDKSessionKey") String sessionKey) throws SQLException {
 		if (!this.isValid(sessionKey, idenReqBody.getAccountName())) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -601,7 +601,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -631,7 +631,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Group>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Group>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -647,7 +647,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -677,7 +677,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -702,7 +702,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<GroupMember>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<GroupMember>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -718,7 +718,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<GroupMember>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<GroupMember>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -734,7 +734,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -754,7 +754,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -780,7 +780,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -805,7 +805,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -821,7 +821,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<GroupAlbum>>(HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
@@ -837,7 +837,7 @@ public class SharedPhotosController {
 			throws SQLException, IOException {
 		if (!this.isValid(sessionKey, sessionAccount)) {
 			System.out.println("invalid key");
-			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(2)), HttpStatus.OK);
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
