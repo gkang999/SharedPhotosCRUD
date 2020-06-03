@@ -90,7 +90,7 @@ public class SharedPhotosController {
 					HttpStatus.UNAUTHORIZED);
 		}
 
-		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
 	}
 
 	/**************************************************
