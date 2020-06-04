@@ -3,6 +3,7 @@ package SharedPhotosCRUD;
 public class GroupAlbum {
 	private String groupName;
 	private String albumName;
+	private String accountName;
 	
 	public GroupAlbum(String groupName, String albumName) {
 		this.setGroupName(groupName);
@@ -20,5 +21,13 @@ public class GroupAlbum {
 	}
 	public void setAlbumName(String accountName) {
 		this.albumName = accountName;
+	}
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
 	}
 }
