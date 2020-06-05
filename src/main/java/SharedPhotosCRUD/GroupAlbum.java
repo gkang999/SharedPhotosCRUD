@@ -5,9 +5,15 @@ public class GroupAlbum {
 	private String albumName;
 	private String accountName;
 	
-	public GroupAlbum(String groupName, String albumName) {
+	public GroupAlbum(String albumName, String accountName) {
+		this.setAlbumName(albumName);
+		this.setAccountName(accountName);
+	}
+	
+	public GroupAlbum(String groupName, String albumName, String accountName) {
 		this.setGroupName(groupName);
 		this.setAlbumName(albumName);
+		this.setAccountName(accountName);
 	}
 	
 	public String getGroupName() {

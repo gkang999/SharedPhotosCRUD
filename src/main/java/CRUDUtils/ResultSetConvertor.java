@@ -150,10 +150,10 @@ public class ResultSetConvertor {
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
 			String albumName = resultSet.getString("album_name");
-			String groupName = resultSet.getString("group_name");
+			String accountName = resultSet.getString("account_name");
 	
 		  //Assuming you have a user object
-			GroupAlbum acc = new GroupAlbum(groupName, albumName);
+			GroupAlbum acc = new GroupAlbum(albumName, accountName);
 	
 		  ll.add(acc);
 		}
