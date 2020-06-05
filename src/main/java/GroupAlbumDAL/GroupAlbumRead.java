@@ -17,7 +17,7 @@ public class GroupAlbumRead {
 			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
-			"INNER JOIN accounts ON accounts.account_id = album.account_id " + 
+			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
 			"WHERE group_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
@@ -55,7 +55,7 @@ public class GroupAlbumRead {
 			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
-			"INNER JOIN accounts ON accounts.account_id = album.account_id " + 
+			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
 			"WHERE album_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
@@ -93,7 +93,7 @@ public class GroupAlbumRead {
 			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
-			"INNER JOIN accounts ON accounts.account_id = album.account_id " + 
+			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
 			"WHERE group_name = BINARY ? " + 
 			"WHERE album_name = BINARY ?";
  
