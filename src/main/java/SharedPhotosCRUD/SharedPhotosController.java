@@ -44,6 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -867,8 +868,8 @@ public class SharedPhotosController {
 		return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
 	}
 
-	@PostMapping("/public/albums/read")
-	public ResponseEntity<List<Album>> readPublicAlbums(@RequestBody Album idenReqBody)
+	@GetMapping("/public/albums/read")
+	public ResponseEntity<List<Album>> readPublicAlbums()
 			throws SQLException, IOException {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
