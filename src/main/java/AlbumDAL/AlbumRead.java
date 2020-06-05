@@ -14,7 +14,7 @@ public class AlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT album_name, account_name FROM albums "
+			String getQueryStatement = "SELECT album_name, account_name, public FROM albums "
 					+ "INNER JOIN accounts ON albums.account_id = accounts.account_id "
 					+ "WHERE accounts.account_name = BINARY ?";
  
@@ -45,7 +45,7 @@ public class AlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT album_name, account_name FROM albums INNER JOIN accounts ON albums.account_id = accounts.account_id WHERE albums.public = 1";
+			String getQueryStatement = "SELECT album_name, account_name, public FROM albums INNER JOIN accounts ON albums.account_id = accounts.account_id WHERE albums.public = 1";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
  

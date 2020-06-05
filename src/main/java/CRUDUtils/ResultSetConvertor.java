@@ -95,12 +95,14 @@ public class ResultSetConvertor {
 		while (resultSet.next() && resultSet != null) {
 			String albumName = resultSet.getString("album_name");
 			String accountName = resultSet.getString("account_name");
+			int publicStatus = resultSet.getInt("public");
 			
 	
 		  //Assuming you have a user object
 			Album acc = new Album();
 			acc.setAlbumName(albumName);
 			acc.setAccountName(accountName);
+			acc.setPublicStatus(publicStatus);
 	
 		  ll.add(acc);
 		}
