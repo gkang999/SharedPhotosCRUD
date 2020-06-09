@@ -5,6 +5,10 @@ public class GroupAlbum {
 	private String albumName;
 	private String accountName;
 	
+	GroupAlbum(){
+	
+	}
+	
 	public GroupAlbum(String albumName, String accountName) {
 		this.setAlbumName(albumName);
 		this.setAccountName(accountName);
