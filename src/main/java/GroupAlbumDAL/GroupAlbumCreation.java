@@ -16,7 +16,7 @@ public class GroupAlbumCreation {
 		
 		try {
 			String insertQueryStatement = "INSERT INTO group_album (group_id, album_id) "
-					+ "SELECT group_id, albums.album_id, 0 "
+					+ "SELECT group_id, albums.album_id "
 					+ "FROM groups, albums WHERE groups.group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?) "
 					+ "AND albums.album_id = (SELECT albums.album_id FROM albums WHERE album_name = BINARY ?) "
 					+ "ON DUPLICATE KEY UPDATE group_id = group_id";
