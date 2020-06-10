@@ -11,8 +11,6 @@ public class GroupAlbumCreation {
 	static PreparedStatement sharedPhotosPreparedStatement = null;
 	
 	public static int addGroupAlbum(String albumName, String groupName, String groupOwnerName, MySQLConnector databaseConnector) {
-		 
-		//membership_status: 0=pending, 1=active, 2=inactive
 		
 		try {
 			String insertQueryStatement = "INSERT INTO group_album (group_id, album_id) SELECT groups.group_id, albums.album_id FROM groups, albums "
@@ -22,6 +20,7 @@ public class GroupAlbumCreation {
 					+ "AND albums.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)) "
 					+ "ON DUPLICATE KEY UPDATE group_album.group_id = group_album.group_id;";
 
+			System.out.println(insertQueryStatement);
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);
 			sharedPhotosPreparedStatement.setString(2, groupOwnerName);
