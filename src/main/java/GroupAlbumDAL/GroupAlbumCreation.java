@@ -17,9 +17,9 @@ public class GroupAlbumCreation {
 		try {
 			String insertQueryStatement = "INSERT INTO group_album (group_id, album_id) "
 					+ "SELECT groups.group_id, albums.album_id "
-					+ "FROM groups, albums WHERE groups.group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?) "
+					+ "FROM groups, albums WHERE groups.group_id = (SELECT groups.group_id FROM groups WHERE group_name = BINARY ?) "
 					+ "AND albums.album_id = (SELECT albums.album_id FROM albums WHERE album_name = BINARY ?) "
-					+ "ON DUPLICATE KEY UPDATE group_id = group_id";
+					+ "ON DUPLICATE KEY UPDATE group_album.group_id = group_album.group_id";
 
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, groupName);
