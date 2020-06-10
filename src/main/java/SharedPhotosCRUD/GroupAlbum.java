@@ -25,7 +25,7 @@ public class GroupAlbum {
 	}
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
-	}
+	}	
 	public String getAlbumName() {
 		return albumName;
 	}

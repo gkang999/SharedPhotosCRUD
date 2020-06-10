@@ -95,7 +95,7 @@ public class GroupAlbumRead {
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
 			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
 			"WHERE group_name = BINARY ? " + 
-			"WHERE album_name = BINARY ?";
+			"AND album_name = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
