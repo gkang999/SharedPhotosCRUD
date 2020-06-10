@@ -14,7 +14,7 @@ public class GroupAlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
+			String getQueryStatement = "SELECT album_name, account_name, group_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
 			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
@@ -52,7 +52,7 @@ public class GroupAlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
+			String getQueryStatement = "SELECT album_name, account_name, group_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
 			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
@@ -90,7 +90,7 @@ public class GroupAlbumRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT album_name, account_name FROM group_album " + 
+			String getQueryStatement = "SELECT album_name, account_name, group_name FROM group_album " + 
 			"INNER JOIN groups ON groups.group_id = group_album.group_id " + 
 			"INNER JOIN albums ON albums.album_id = group_album.album_id " + 
 			"INNER JOIN accounts ON accounts.account_id = albums.account_id " + 
