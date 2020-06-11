@@ -793,7 +793,7 @@ public class SharedPhotosController {
 			if (matchingRecordsCount > 0) {
 				return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 			}
-			System.out.println("send");
+			System.out.println("send" + idenReqBody.getAlbumName() + idenReqBody.getGroupName() + idenReqBody.getAccountName());
 			GroupAlbumCreation.addGroupAlbum(idenReqBody.getAlbumName(), idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
