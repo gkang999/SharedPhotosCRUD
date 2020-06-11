@@ -18,7 +18,7 @@ public class GroupAlbumCreation {
 					+ "AND groups.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)) "
 					+ "AND albums.album_id = (SELECT albums.album_id FROM albums WHERE album_name = BINARY ? "
 					+ "AND albums.account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?)) "
-					+ "ON DUPLICATE KEY UPDATE group_album.group_id = group_album.group_id";
+					+ "ON DUPLICATE KEY UPDATE group_id = group_album.group_id";
 
 			System.out.println(insertQueryStatement);
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);

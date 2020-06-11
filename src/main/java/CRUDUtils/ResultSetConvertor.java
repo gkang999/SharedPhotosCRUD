@@ -44,7 +44,6 @@ public class ResultSetConvertor {
 	public static List<Identity> convertToIdentityList(ResultSet resultSet) throws SQLException {
 		List<Identity> ll = new LinkedList<Identity>();
 	
-		// Fetch each row from the result set
 		while (resultSet.next()) {
 			String accountName = resultSet.getString("account_name");
 			String email = resultSet.getString("email");
@@ -72,7 +71,6 @@ public class ResultSetConvertor {
 			String pictureName = resultSet.getString("picture_name");
 			String pictureExt = resultSet.getString("picture_extension");
 	
-		  //Assuming you have a user object
 			Image acc = new Image();
 			acc.setPictureName(pictureName);
 			acc.setPictureExtension(pictureExt);
@@ -97,8 +95,6 @@ public class ResultSetConvertor {
 			String accountName = resultSet.getString("account_name");
 			int publicStatus = resultSet.getInt("public");
 			
-	
-		  //Assuming you have a user object
 			Album acc = new Album();
 			acc.setAlbumName(albumName);
 			acc.setAccountName(accountName);
@@ -118,7 +114,6 @@ public class ResultSetConvertor {
 			String groupName = resultSet.getString("group_name");
 			String accountName = resultSet.getString("account_name");
 	
-		  //Assuming you have a user object
 			Group acc = new Group(groupName, accountName);
 	
 		  ll.add(acc);
@@ -137,7 +132,6 @@ public class ResultSetConvertor {
 			String accountOwner = resultSet.getString("account_owner");
 			String groupName = resultSet.getString("group_name");
 	
-		  //Assuming you have a user object
 			GroupMember acc = new GroupMember(groupName, accountName, accountOwner, membershipStatus);
 	
 		  ll.add(acc);
@@ -155,7 +149,6 @@ public class ResultSetConvertor {
 			String accountName = resultSet.getString("account_name");
 			String groupName = resultSet.getString("group_name");
 	
-		  //Assuming you have a user object
 			GroupAlbum acc = new GroupAlbum(groupName, albumName, accountName);
 	
 		  ll.add(acc);

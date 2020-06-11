@@ -9,11 +9,6 @@ public class GroupAlbum {
 	
 	}
 	
-	public GroupAlbum(String albumName, String accountName) {
-		this.setAlbumName(albumName);
-		this.setAccountName(accountName);
-	}
-	
 	public GroupAlbum(String groupName, String albumName, String accountName) {
 		this.setGroupName(groupName);
 		this.setAlbumName(albumName);
