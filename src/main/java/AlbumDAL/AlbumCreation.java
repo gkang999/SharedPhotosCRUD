@@ -29,4 +29,25 @@ public class AlbumCreation {
 			return 1;
 		}
 	}
+	
+	public static int addPublicAlbum(String accountName, String albumName, MySQLConnector databaseConnector) {
+		 
+		try {
+			String insertQueryStatement = "INSERT  INTO  albums (account_id, album_name, public) SELECT "
+					+ "accounts.account_id, ?, 1 FROM accounts WHERE accounts.account_name = BINARY ? "
+					+ "ON DUPLICATE KEY UPDATE album_id = album_id";
+ 
+			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
+			sharedPhotosPreparedStatement.setString(1, albumName);
+			sharedPhotosPreparedStatement.setString(2, accountName);
+ 
+			// execute insert SQL statement
+			sharedPhotosPreparedStatement.executeUpdate();
+			SysOLog.log(albumName + " added successfully");
+			return 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 1;
+		}
+	}
 }
