@@ -5,6 +5,10 @@ public class Album {
 	private String accountName;	
 	private int publicStatus;
 	
+	public Album() {
+		
+	}
+	
 	public String getAlbumName() {
 		return albumName;
 	}
