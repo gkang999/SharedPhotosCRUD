@@ -16,7 +16,7 @@ public class GroupMemberCreation {
 		
 		try {
 			String insertQueryStatement = "INSERT INTO group_member (group_id, account_id, membership_status) "
-					+ "SELECT groups.group_id, accounts.account_id, 0 "
+					+ "SELECT group_id, accounts.account_id, 0 "
 					+ "FROM groups, accounts WHERE groups.group_id = (SELECT group_id FROM groups WHERE group_name = BINARY ?) "
 					+ "AND accounts.account_id = (SELECT accounts.account_id FROM accounts WHERE account_name = BINARY ?) "
 					+ "ON DUPLICATE KEY UPDATE groups.group_id = groups.group_id";
