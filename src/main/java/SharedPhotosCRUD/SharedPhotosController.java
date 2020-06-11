@@ -863,7 +863,7 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			AlbumCreation.addAlbum("GuestAccount", idenReqBody.getAlbumName(), myConnector);
+			AlbumCreation.addPublicAlbum("GuestUser", idenReqBody.getAlbumName(), myConnector);
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 		}
@@ -887,7 +887,7 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			AlbumDelete.deleteAlbum("GuestAccount", idenReqBody.getAlbumName(), myConnector);
+			AlbumDelete.deleteAlbum("GuestUser", idenReqBody.getAlbumName(), myConnector);
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 		}
