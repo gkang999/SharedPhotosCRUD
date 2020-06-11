@@ -28,7 +28,7 @@ public class GroupAlbumCreation {
 			sharedPhotosPreparedStatement.setString(4, groupOwnerName);
  
 			// execute insert SQL statement
-			sharedPhotosPreparedStatement.executeUpdate();
+			sharedPhotosPreparedStatement.execute();
 			SysOLog.log(albumName + " added successfully");
 			return 0;
 		} catch (SQLException e) {
