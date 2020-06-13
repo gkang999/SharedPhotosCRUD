@@ -912,7 +912,7 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 
 		List<Image> tr = ResultSetConvertor
-				.convertToImageList(ImageRead.readPictures("GuestAccount", idenReqBody.getAlbumName(), myConnector));
+				.convertToImageList(ImageRead.readPictures(idenReqBody.getAccountName(), idenReqBody.getAlbumName(), myConnector));
 
 		// get the base64 encodings and then return the list
 		for (int i = 0; i < tr.size(); i++) {
