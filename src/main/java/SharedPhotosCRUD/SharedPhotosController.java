@@ -787,12 +787,6 @@ public class SharedPhotosController {
 		myConnector.makeJDBCConnection();
 		System.out.println("here");
 		try {
-			int matchingRecordsCount = ResultSetConvertor
-					.countFromResultSet(GroupAlbumRead.readGroupAlbumCountByGroupAndAlbum(idenReqBody.getGroupName(),
-							idenReqBody.getAlbumName(), myConnector), "NumberOfGroupAlbum");
-			if (matchingRecordsCount > 0) {
-				return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
-			}
 			System.out.println("send" + idenReqBody.getAlbumName() + idenReqBody.getGroupName() + idenReqBody.getAccountName());
 			GroupAlbumCreation.addGroupAlbum(idenReqBody.getAlbumName(), idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
 		} catch (Exception e) {
