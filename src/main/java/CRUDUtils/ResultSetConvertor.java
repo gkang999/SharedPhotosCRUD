@@ -149,7 +149,7 @@ public class ResultSetConvertor {
 			String accountName = resultSet.getString("account_name");
 			String groupName = resultSet.getString("group_name");
 	
-			GroupAlbum acc = new GroupAlbum(groupName, albumName, accountName);
+			GroupAlbum acc = new GroupAlbum(albumName, groupName, accountName);
 	
 		  ll.add(acc);
 		}

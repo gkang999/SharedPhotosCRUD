@@ -9,9 +9,9 @@ public class GroupAlbum {
 	
 	}
 	
-	public GroupAlbum(String groupName, String albumName, String accountName) {
-		this.setGroupName(groupName);
+	public GroupAlbum(String albumName, String groupName, String accountName) {
 		this.setAlbumName(albumName);
+		this.setGroupName(groupName);
 		this.setAccountName(accountName);
 	}
 	
