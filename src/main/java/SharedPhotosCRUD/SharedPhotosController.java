@@ -760,8 +760,6 @@ public class SharedPhotosController {
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
 		try {
-			System.out.println(
-					idenReqBody.getAccountName() + idenReqBody.getGroupName() + idenReqBody.getMembershipStatus());
 			GroupMemberUpdate.updateGroupMemberStatus(idenReqBody.getAccountName(), idenReqBody.getGroupName(),
 					idenReqBody.getMembershipStatus(), myConnector);
 		} catch (Exception e) {
@@ -785,15 +783,11 @@ public class SharedPhotosController {
 		}
 		MySQLConnector myConnector = new MySQLConnector();
 		myConnector.makeJDBCConnection();
-		System.out.println("here");
 		try {
-			System.out.println("send" + idenReqBody.getAlbumName() + idenReqBody.getGroupName() + idenReqBody.getAccountName());
 			GroupAlbumCreation.addGroupAlbum(idenReqBody.getAlbumName(), idenReqBody.getGroupName(), idenReqBody.getAccountName(), myConnector);
 		} catch (Exception e) {
 			return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(1)), HttpStatus.OK);
 		}
-
-		System.out.println("out");
 		return new ResponseEntity<List<Integer>>( new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
 	}
 
