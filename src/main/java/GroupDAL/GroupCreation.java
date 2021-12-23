@@ -13,9 +13,9 @@ public class GroupCreation {
 	public static int addGroup(String accountName, String groupName, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "INSERT INTO groups (account_id, group_name) "
+			String insertQueryStatement = "INSERT INTO groupaccounts (group_owner_id, groupname) "
 					+ "SELECT accounts.account_id, ? FROM accounts "
-					+ "WHERE account_name = BINARY ? "
+					+ "WHERE accountname = BINARY ? "
 					+ "ON DUPLICATE KEY UPDATE group_id = group_id";
 
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);

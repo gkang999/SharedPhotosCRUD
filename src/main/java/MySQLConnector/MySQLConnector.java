@@ -21,9 +21,9 @@ public class MySQLConnector {
  
 		try {
 			// DriverManager: The basic service for managing a set of JDBC drivers.
-			String jdbcConnString = System.getenv("jdbcConnectionString");
-			String jdbcUser = System.getenv("jdbcUser");
-			String jdbcPassword = System.getenv("jdbcPassword");
+			String jdbcConnString = "jdbc:mysql://127.0.0.1:3306/sharedPhotosConn?useSSL=false";
+			String jdbcUser = "root";
+			String jdbcPassword = "209146Mouse*";
 			
 			sharedPhotosConn = DriverManager.getConnection(jdbcConnString, jdbcUser, jdbcPassword);
 			if (sharedPhotosConn != null) {

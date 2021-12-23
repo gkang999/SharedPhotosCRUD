@@ -45,7 +45,7 @@ public class ResultSetConvertor {
 		List<Identity> ll = new LinkedList<Identity>();
 	
 		while (resultSet.next()) {
-			String accountName = resultSet.getString("account_name");
+			String accountName = resultSet.getString("accountname");
 			String email = resultSet.getString("email");
 			String accountOwner = resultSet.getString("account_owner");
 			String roleType = resultSet.getString("role_type");
@@ -91,8 +91,8 @@ public class ResultSetConvertor {
 	
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
-			String albumName = resultSet.getString("album_name");
-			String accountName = resultSet.getString("account_name");
+			String albumName = resultSet.getString("albumname");
+			String accountName = resultSet.getString("accountname");
 			int publicStatus = resultSet.getInt("public");
 			
 			Album acc = new Album();
@@ -111,8 +111,8 @@ public class ResultSetConvertor {
 	
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
-			String groupName = resultSet.getString("group_name");
-			String accountName = resultSet.getString("account_name");
+			String groupName = resultSet.getString("groupname");
+			String accountName = resultSet.getString("accountname");
 	
 			Group acc = new Group(groupName, accountName);
 	
@@ -128,7 +128,7 @@ public class ResultSetConvertor {
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
 			int membershipStatus = resultSet.getInt("membership_status");
-			String accountName = resultSet.getString("account_name");
+			String accountName = resultSet.getString("accountname");
 			String accountOwner = resultSet.getString("account_owner");
 			String groupName = resultSet.getString("group_name");
 	
@@ -145,8 +145,8 @@ public class ResultSetConvertor {
 	
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
-			String albumName = resultSet.getString("album_name");
-			String accountName = resultSet.getString("account_name");
+			String albumName = resultSet.getString("albumname");
+			String accountName = resultSet.getString("accountname");
 			String groupName = resultSet.getString("group_name");
 	
 			GroupAlbum acc = new GroupAlbum(albumName, groupName, accountName);

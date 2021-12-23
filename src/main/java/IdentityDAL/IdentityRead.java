@@ -13,8 +13,8 @@ public class IdentityRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT account_name, email, account_owner, creation_date, role_type FROM accounts, "
-					+ "roles WHERE role_type = roles.role_type AND roles.role_id = accounts.role_id AND accounts.account_name = BINARY ? ORDER BY account_name ASC";
+			String getQueryStatement = "SELECT accountname, email, account_owner, creation_date, role_type FROM accounts, "
+					+ "roles WHERE role_type = roles.role_type AND roles.role_id = accounts.account_role_id AND accounts.accountname = BINARY ? ORDER BY accountname ASC";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
@@ -50,10 +50,10 @@ public class IdentityRead {
 			// MySQL Select Query Tutorial
 			String getQueryStatement = "SELECT COUNT(account_id) AS NumberOfIdentity FROM accounts, roles "
 					+ "WHERE role_type = roles.role_type "
-					+ "AND roles.role_id = accounts.role_id "
-					+ "AND accounts.account_name = ? "
-					+ "AND accounts.pass_hash = ? "
-					+ "ORDER BY account_name ASC";
+					+ "AND roles.role_id = accounts.account_role_id "
+					+ "AND accounts.accountname = ? "
+					+ "AND accounts.accountpassword = ? "
+					+ "ORDER BY accountname ASC";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 

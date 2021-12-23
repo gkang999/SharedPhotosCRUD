@@ -12,11 +12,11 @@ public class ImageCreation {
 	public static int addPicture(String accountName, String pictureName, String albumName, String pictureExtension, MySQLConnector databaseConnector) {
  
 		try {
-			String insertQueryStatement = "INSERT  INTO  pictures "
-					+ "SELECT albums.account_id, ?, albums.album_id, ? "
-					+ "FROM albums INNER JOIN accounts ON albums.account_id = accounts.account_id "
-					+ "WHERE accounts.account_name = BINARY ? " 
-					+ "AND albums.album_name = BINARY ?;";
+			String insertQueryStatement = "INSERT  INTO  pictures (picturename, picture_owner_id, picture_album_id, pictureextension) "
+					+ "SELECT ?, albums.album_owner_id, albums.album_id, ? "
+					+ "FROM albums INNER JOIN accounts ON albums.album_owner_id = accounts.account_id "
+					+ "WHERE accounts.accountname = BINARY ? " 
+					+ "AND albums.albumname = BINARY ?;";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);

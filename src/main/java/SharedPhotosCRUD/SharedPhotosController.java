@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import IdentityDAL.*;
 import ImageDAL.*;
 import MySQLConnector.*;
-import SharedPhotosUtils.PassHasher;
+import SharedPhotosUtils.*;
 import CRUDUtils.*;
 import GroupAlbumDAL.GroupAlbumCreation;
 import GroupAlbumDAL.GroupAlbumDelete;
@@ -60,6 +60,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RestController
 public class SharedPhotosController {
+
+	@GetMapping("/hello")
+	ResponseEntity<String> hello() {
+    	return new ResponseEntity<String>("Hello World!", HttpStatus.OK);
+	}
 
 	List<Triplet<UUID, LocalDateTime, String>> SessionKeys = new ArrayList<Triplet<UUID, LocalDateTime, String>>();
 
@@ -137,7 +142,6 @@ public class SharedPhotosController {
 			return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(1)),
 					HttpStatus.OK);
 		}
-
 		return new ResponseEntity<List<Integer>>(new LinkedList<Integer>(Arrays.asList(0)), HttpStatus.OK);
 	}
 
