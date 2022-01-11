@@ -68,8 +68,8 @@ public class ResultSetConvertor {
 	
 		// Fetch each row from the result set
 		while (resultSet.next() && resultSet != null) {
-			String pictureName = resultSet.getString("picture_name");
-			String pictureExt = resultSet.getString("picture_extension");
+			String pictureName = resultSet.getString("picturename");
+			String pictureExt = resultSet.getString("pictureextension");
 	
 			Image acc = new Image();
 			acc.setPictureName(pictureName);

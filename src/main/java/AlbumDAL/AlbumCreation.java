@@ -33,8 +33,8 @@ public class AlbumCreation {
 	public static int addPublicAlbum(String accountName, String albumName, MySQLConnector databaseConnector) {
 		 
 		try {
-			String insertQueryStatement = "INSERT  INTO  albums (account_id, albumname, public) SELECT "
-					+ "accounts.account_id, ?, 1 FROM accounts WHERE accounts.account_name = BINARY ? "
+			String insertQueryStatement = "INSERT  INTO  albums (albumname, album_owner_id, public) SELECT "
+					+ "?, accounts.account_id, 1 FROM accounts WHERE accounts.accountname = BINARY ? "
 					+ "ON DUPLICATE KEY UPDATE album_id = album_id";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);

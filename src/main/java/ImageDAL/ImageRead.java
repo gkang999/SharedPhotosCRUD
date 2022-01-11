@@ -14,11 +14,11 @@ public class ImageRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT picture_name, picture_extension FROM pictures " + 
-					"INNER JOIN albums ON pictures.album_id = albums.album_id " + 
-					"INNER JOIN accounts ON pictures.account_id = accounts.account_id " + 
-					"WHERE albums.album_name = BINARY ? " + 
-					"AND accounts.account_name = BINARY ? ";
+			String getQueryStatement = "SELECT picturename, pictureextension FROM pictures " + 
+					"INNER JOIN albums ON pictures.picture_album_id = albums.album_id " + 
+					"INNER JOIN accounts ON pictures.picture_owner_id = accounts.account_id " + 
+					"WHERE albums.albumname = BINARY ? " + 
+					"AND accounts.accountname = BINARY ? ";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 
@@ -51,12 +51,12 @@ public class ImageRead {
 		 
 		try {
 			// MySQL Select Query Tutorial
-			String getQueryStatement = "SELECT COUNT(picture_name) AS NumberOfPictures FROM pictures " + 
-					"INNER JOIN albums ON pictures.album_id = albums.album_id " + 
-					"INNER JOIN accounts ON pictures.account_id = accounts.account_id " + 
-					"WHERE pictures.picture_name = BINARY ? " + 
-					"AND albums.album_name = BINARY ? " +
-					"AND account_name = BINARY ?";
+			String getQueryStatement = "SELECT COUNT(picturename) AS NumberOfPictures FROM pictures " + 
+					"INNER JOIN albums ON pictures.picture_album_id = albums.album_id " + 
+					"INNER JOIN accounts ON pictures.picture_owner_id = accounts.account_id " + 
+					"WHERE pictures.picturename = BINARY ? " + 
+					"AND albums.albumname = BINARY ? " +
+					"AND accountname = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 

@@ -13,9 +13,9 @@ public class AlbumDelete {
 		 
 		try {
 			String insertQueryStatement = "DELETE albums.* FROM albums "
-					+ "INNER JOIN accounts ON accounts.account_id = albums.account_id "
-					+ "WHERE album_name = BINARY ? "
-					+ "AND accounts.account_name = BINARY ?";
+					+ "INNER JOIN accounts ON accounts.account_id = albums.album_owner_id "
+					+ "WHERE albumname = BINARY ? "
+					+ "AND accounts.accountname = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, albumName);

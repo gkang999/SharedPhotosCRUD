@@ -13,9 +13,9 @@ public class AlbumUpdate {
 	public static int updateAlbumName(String accountName, String oldAlbumName, String newAlbumName, MySQLConnector databaseConnector) {
 		 
 		try {
-			String insertQueryStatement = "UPDATE albums SET album_name = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
-					+ "AND album_name = BINARY ?;";
+			String insertQueryStatement = "UPDATE albums SET albumname = ? "
+					+ "WHERE album_owner_id = (SELECT account_id FROM accounts WHERE accountname = BINARY ?) "
+					+ "AND albumname = BINARY ?;";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, newAlbumName);
@@ -36,8 +36,8 @@ public class AlbumUpdate {
 		 
 		try {
 			String insertQueryStatement = "UPDATE albums SET public = ? "
-					+ "WHERE account_id = (SELECT account_id FROM accounts WHERE account_name = BINARY ?) "
-					+ "AND album_name = BINARY ?;";
+					+ "WHERE album_owner_id = (SELECT account_id FROM accounts WHERE accountname = BINARY ?) "
+					+ "AND albumname = BINARY ?;";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setInt(1, publicV);

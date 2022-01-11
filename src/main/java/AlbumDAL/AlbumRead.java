@@ -75,7 +75,7 @@ public class AlbumRead {
 			String getQueryStatement = "SELECT COUNT(album_id) AS NumberOfAlbums FROM albums "
 					+ "INNER JOIN accounts ON albums.album_owner_id = accounts.account_id"
 					+ "WHERE albums.albumname = BINARY ? "
-					+ "AND accounts.account_name = BINARY ?";
+					+ "AND accounts.accountname = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(getQueryStatement);
 			

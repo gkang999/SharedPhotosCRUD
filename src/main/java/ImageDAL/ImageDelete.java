@@ -13,11 +13,11 @@ public class ImageDelete {
  
 		try {
 			String insertQueryStatement = "DELETE pictures.* FROM pictures "
-					+ "INNER JOIN albums ON pictures.album_id = albums.album_id "
-					+ "INNER JOIN accounts ON albums.account_id = accounts.account_id "
-					+ "WHERE picture_name = BINARY ? "
-					+ "AND albums.album_name = BINARY ? "
-					+ "AND accounts.account_name = BINARY ?";
+					+ "INNER JOIN albums ON pictures.picture_album_id = albums.album_id "
+					+ "INNER JOIN accounts ON albums.album_owner_id = accounts.account_id "
+					+ "WHERE picturename = BINARY ? "
+					+ "AND albums.albumname = BINARY ? "
+					+ "AND accounts.accountname = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, pictureName);
@@ -38,10 +38,10 @@ public class ImageDelete {
 		 
 		try {
 			String insertQueryStatement = "DELETE pictures.* FROM pictures "
-					+ "INNER JOIN albums ON pictures.album_id = albums.album_id "
-					+ "INNER JOIN accounts ON albums.account_id = accounts.account_id "
-					+ "AND albums.album_name = BINARY ? "
-					+ "AND accounts.account_name = BINARY ?";
+					+ "INNER JOIN albums ON pictures.picture_album_id = albums.album_id "
+					+ "INNER JOIN accounts ON albums.album_owner_id = accounts.account_id "
+					+ "AND albums.albumname = BINARY ? "
+					+ "AND accounts.accountname = BINARY ?";
  
 			sharedPhotosPreparedStatement = databaseConnector.sharedPhotosConn.prepareStatement(insertQueryStatement);
 			sharedPhotosPreparedStatement.setString(1, albumName);
