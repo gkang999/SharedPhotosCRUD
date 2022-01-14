@@ -908,7 +908,7 @@ public class SharedPhotosController {
 
 		// get the base64 encodings and then return the list
 		for (int i = 0; i < tr.size(); i++) {
-			HttpPost post = new HttpPost("http://localhost:8080/photos/get");
+			HttpPost post = new HttpPost("https://shared-photos-media.herokuapp.com/photos/get");
 			// add request parameter, form parameters
 			List<NameValuePair> urlParameters = new ArrayList<>();
 			urlParameters.add(new BasicNameValuePair("accountName", idenReqBody.getAccountName()));
@@ -957,7 +957,7 @@ public class SharedPhotosController {
 			idenReqBody.setPictureName(idenReqOriginalName + "(" + String.valueOf(duplicate) + ")");
 		}
 
-		HttpPost post = new HttpPost("http://localhost:8080/photos/upload");
+		HttpPost post = new HttpPost("https://shared-photos-media.herokuapp.com/photos/upload");
 
 		// add request parameter, form parameters
 		List<NameValuePair> urlParameters = new ArrayList<>();
@@ -1010,7 +1010,7 @@ public class SharedPhotosController {
 
 		myConnector.closeJDBCConnection();
 
-		HttpPost post = new HttpPost("http://localhost:8080/photos/delete");
+		HttpPost post = new HttpPost("https://shared-photos-media.herokuapp.com/photos/delete");
 
 		// add request parameter, form parameters
 		List<NameValuePair> urlParameters = new ArrayList<>();
