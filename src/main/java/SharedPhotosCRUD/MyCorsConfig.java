@@ -23,7 +23,7 @@ public class MyCorsConfig implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final HttpServletResponse response = (HttpServletResponse) res;
-        response.setHeader("Access-Control-Allow-Origin", "sharedphotos-8df87.firebaseapp.com/");
+        response.setHeader("Access-Control-Allow-Origin", "https://sharedphotos-8df87.firebaseapp.com");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, enctype, Access-Control-Allow-Headers, SPDKSessionKey, SPDKKeyAccount");
         response.setHeader("Access-Control-Max-Age", "3600");
