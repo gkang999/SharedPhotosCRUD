@@ -252,6 +252,7 @@ public class SharedPhotosController {
 					CloseableHttpResponse response = httpClient.execute(post)) {
 				tr.get(i).setBase64Encoding(
 						new JSONObject(EntityUtils.toString(response.getEntity())).getString("base64Encoding"));
+				System.out.println(tr.get(i).getBase64Encoding());
 			}
 		}
 
